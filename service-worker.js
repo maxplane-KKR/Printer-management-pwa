@@ -1,10 +1,10 @@
-const CACHE_NAME = 'printer-management-shell-v1';
+const CACHE_NAME = 'printer-management-shell-v2';
 const APP_SHELL = [
   '/',
   '/Index.html',
   '/manifest.webmanifest',
-  '/assets/icons/icon-192.png',
-  '/assets/icons/icon-512.png'
+  '/assets/icons/icon-any-192-v3.png',
+  '/assets/icons/icon-any-512-v3.png'
 ];
 const CACHEABLE_PATHS = new Set(APP_SHELL);
 

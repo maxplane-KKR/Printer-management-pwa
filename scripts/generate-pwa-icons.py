@@ -13,10 +13,13 @@ MASTER = ICONS / "icon-master-1024.png"
 MASKABLE_BACKGROUND = (253, 198, 46, 255)
 
 OUTPUT_SIZES = {
-    "icon-192.png": 192,
-    "icon-512.png": 512,
     "apple-touch-icon.png": 180,
     "mstile-150x150.png": 150,
+}
+
+WINDOWS_OUTPUT_SIZES = {
+    "icon-any-192-v3.png": 192,
+    "icon-any-512-v3.png": 512,
 }
 
 
@@ -33,6 +36,29 @@ def centered_variant(source, size, artwork_ratio, background_color=None):
     return background
 
 
+def transparent_corner_variant(source, size):
+    cleaned = source.copy()
+    corner_size = round(source.width * 0.16)
+    red_reference = MASKABLE_BACKGROUND[0]
+
+    for y in range(source.height):
+        for x in range(source.width):
+            is_corner = (
+                (x < corner_size or x >= source.width - corner_size)
+                and (y < corner_size or y >= source.height - corner_size)
+            )
+            if not is_corner:
+                continue
+
+            red, _, _, _ = source.getpixel((x, y))
+            alpha = min(255, round(red * 255 / red_reference))
+            if alpha <= 4:
+                alpha = 0
+            cleaned.putpixel((x, y), (*MASKABLE_BACKGROUND[:3], alpha))
+
+    return cleaned.resize((size, size), Image.Resampling.LANCZOS)
+
+
 def main():
     ICONS.mkdir(parents=True, exist_ok=True)
     source = Image.open(MASTER).convert("RGBA")
@@ -41,6 +67,12 @@ def main():
 
     for filename, size in OUTPUT_SIZES.items():
         master.resize((size, size), Image.Resampling.LANCZOS).save(
+            ICONS / filename,
+            optimize=True,
+        )
+
+    for filename, size in WINDOWS_OUTPUT_SIZES.items():
+        transparent_corner_variant(master, size).save(
             ICONS / filename,
             optimize=True,
         )

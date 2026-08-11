@@ -32,8 +32,8 @@ async function main() {
   assert.equal(manifest.theme_color, '#F4C95D');
 
   const expectedIcons = [
-    ['/assets/icons/icon-192.png', '192x192', 'any'],
-    ['/assets/icons/icon-512.png', '512x512', 'any'],
+    ['/assets/icons/icon-any-192-v3.png', '192x192', 'any'],
+    ['/assets/icons/icon-any-512-v3.png', '512x512', 'any'],
     ['/assets/icons/icon-maskable-192-v2.png', '192x192', 'maskable'],
     ['/assets/icons/icon-maskable-512-v2.png', '512x512', 'maskable']
   ];
@@ -108,18 +108,21 @@ async function main() {
   let installTask;
   listeners.install({ waitUntil(task) { installTask = task; } });
   await installTask;
-  assert.deepEqual(cacheEntries.get('printer-management-shell-v1'), [
+  assert.deepEqual(cacheEntries.get('printer-management-shell-v2'), [
     '/',
     '/Index.html',
     '/manifest.webmanifest',
-    '/assets/icons/icon-192.png',
-    '/assets/icons/icon-512.png'
+    '/assets/icons/icon-any-192-v3.png',
+    '/assets/icons/icon-any-512-v3.png'
   ]);
 
   let activateTask;
   listeners.activate({ waitUntil(task) { activateTask = task; } });
   await activateTask;
-  assert.deepEqual(deletedCaches, ['printer-management-shell-v0']);
+  assert.deepEqual(deletedCaches, [
+    'printer-management-shell-v0',
+    'printer-management-shell-v1'
+  ]);
 
   function dispatchFetch(url, method = 'GET') {
     let responseTask;
@@ -152,11 +155,11 @@ async function main() {
     'service worker ต้อง cache เฉพาะ app shell และ static assets ที่อนุญาต'
   );
 
-  const staticResponse = dispatchFetch('https://printer.example/assets/icons/icon-192.png');
+  const staticResponse = dispatchFetch('https://printer.example/assets/icons/icon-any-192-v3.png');
   assert.ok(staticResponse instanceof Promise, 'ไฟล์ static แบบ GET ต้องใช้กลยุทธ์ cache-first');
   await staticResponse;
   await Promise.all(backgroundTasks);
-  assert.deepEqual(fetchedUrls, ['https://printer.example/assets/icons/icon-192.png']);
+  assert.deepEqual(fetchedUrls, ['https://printer.example/assets/icons/icon-any-192-v3.png']);
 
   const vercel = JSON.parse(readRootFile('vercel.json'));
   const packageMetadata = JSON.parse(readRootFile('package.json'));
