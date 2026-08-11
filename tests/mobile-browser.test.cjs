@@ -134,20 +134,29 @@ function listen() {
   await page.locator('[data-mobile-view="manage"]').click();
   for (const viewport of [
     { width: 320, height: 720 },
+    { width: 430, height: 720 },
     { width: 812, height: 375 },
     { width: 1024, height: 768 }
   ]) {
     await page.setViewportSize(viewport);
     await page.waitForTimeout(80);
-    const metrics = await page.evaluate(() => ({
-      layout: document.body.dataset.layout,
-      widthOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-      heightOverflow: document.documentElement.scrollHeight - document.documentElement.clientHeight,
-      cardOverflow: [...document.querySelectorAll('#mobile-form,#mobile-tools,#mobile-overview')]
-        .map(element => ({ id: element.id, client: element.clientHeight, scroll: element.scrollHeight })),
-      minControlHeight: Math.min(...[...document.querySelectorAll('#printer-form input:not([type="hidden"]),#printer-form button:not([style*="display: none"])')]
-        .map(element => element.getBoundingClientRect().height).filter(Boolean))
-    }));
+    const metrics = await page.evaluate(() => {
+      const submitTop = document.querySelector('#submit-btn').getBoundingClientRect().top;
+      const finalInputBottom = Math.max(
+        ...[...document.querySelectorAll('#printer-type,#printer-note')]
+          .map(element => element.getBoundingClientRect().bottom)
+      );
+      return {
+        layout: document.body.dataset.layout,
+        widthOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        heightOverflow: document.documentElement.scrollHeight - document.documentElement.clientHeight,
+        cardOverflow: [...document.querySelectorAll('#mobile-form,#mobile-tools,#mobile-overview')]
+          .map(element => ({ id: element.id, client: element.clientHeight, scroll: element.scrollHeight })),
+        formControlGap: submitTop - finalInputBottom,
+        minControlHeight: Math.min(...[...document.querySelectorAll('#printer-form input:not([type="hidden"]),#printer-form button:not([style*="display: none"])')]
+          .map(element => element.getBoundingClientRect().height).filter(Boolean))
+      };
+    });
     assert.equal(metrics.layout, 'compact', `${viewport.width}px ต้องเป็น compact`);
     assert.ok(metrics.widthOverflow <= 1, `${viewport.width}px ต้องไม่ล้นแนวนอน`);
     assert.ok(metrics.heightOverflow <= 1, `${viewport.width}px ต้องไม่ล้นแนวตั้ง: ${JSON.stringify(metrics)}`);
@@ -156,6 +165,7 @@ function listen() {
       false,
       `${viewport.width}px content ต้องไม่ล้นการ์ด: ${JSON.stringify(metrics.cardOverflow)}`
     );
+    assert.ok(metrics.formControlGap >= 4, `${viewport.width}px ปุ่มบันทึกต้องไม่ทับช่อง Type/Notes: ${JSON.stringify(metrics)}`);
     assert.ok(metrics.minControlHeight >= 44, `${viewport.width}px touch target ต้องไม่น้อยกว่า 44px`);
   }
 
