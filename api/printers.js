@@ -1,3 +1,24 @@
+const WRITE_ACTIONS = new Set(['syncPrinters', 'saveToSheet']);
+const PAYLOAD_KEYS = new Set(['action', 'source', 'updatedAt', 'printers']);
+const PRINTER_KEYS = new Set(['id', 'name', 'ip', 'location', 'type', 'status', 'lastUpdated', 'note']);
+
+function isPlainObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function isValidWritePayload(payload) {
+  if (!isPlainObject(payload) || !WRITE_ACTIONS.has(payload.action) || !Array.isArray(payload.printers)) return false;
+  if (payload.printers.length > 5000 || Object.keys(payload).some(key => !PAYLOAD_KEYS.has(key))) return false;
+  if (payload.source !== undefined && typeof payload.source !== 'string') return false;
+  if (payload.updatedAt !== undefined && typeof payload.updatedAt !== 'string') return false;
+
+  return payload.printers.every(printer =>
+    isPlainObject(printer) &&
+    Object.keys(printer).every(key => PRINTER_KEYS.has(key)) &&
+    Object.values(printer).every(value => typeof value === 'string')
+  );
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
@@ -13,7 +34,7 @@ module.exports = async function handler(req, res) {
   }
 
   const clientPayload = req.method === 'GET' ? { action: 'getPrinters' } : req.body;
-  if (req.method === 'POST' && !Array.isArray(clientPayload?.printers)) {
+  if (req.method === 'POST' && !isValidWritePayload(clientPayload)) {
     return res.status(400).json({ ok: false, code: 'INVALID_PAYLOAD' });
   }
 

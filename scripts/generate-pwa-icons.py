@@ -2,6 +2,10 @@ from pathlib import Path
 
 from PIL import Image
 
+# Reproducible setup:
+#   python -m pip install -r requirements-icons.txt
+#   python scripts/generate-pwa-icons.py
+
 
 ROOT = Path(__file__).resolve().parents[1]
 ICONS = ROOT / "assets" / "icons"
@@ -10,13 +14,18 @@ MASTER = ICONS / "icon-master-1024.png"
 OUTPUT_SIZES = {
     "icon-192.png": 192,
     "icon-512.png": 512,
-    "icon-maskable-192.png": 192,
-    "icon-maskable-512.png": 512,
     "apple-touch-icon.png": 180,
-    "favicon-16x16.png": 16,
-    "favicon-32x32.png": 32,
     "mstile-150x150.png": 150,
 }
+
+
+def centered_variant(source, size, artwork_ratio):
+    background = Image.new("RGBA", (size, size), source.getpixel((0, 0)))
+    artwork_size = round(size * artwork_ratio)
+    artwork = source.resize((artwork_size, artwork_size), Image.Resampling.LANCZOS)
+    offset = (size - artwork_size) // 2
+    background.alpha_composite(artwork, (offset, offset))
+    return background
 
 
 def main():
@@ -28,6 +37,19 @@ def main():
     for filename, size in OUTPUT_SIZES.items():
         master.resize((size, size), Image.Resampling.LANCZOS).save(
             ICONS / filename,
+            optimize=True,
+        )
+
+    for size in (192, 512):
+        centered_variant(master, size, 0.66).save(
+            ICONS / f"icon-maskable-{size}.png",
+            optimize=True,
+        )
+
+    # Favicon keeps only the central mark enlarged, avoiding unreadable edge detail.
+    for size in (16, 32):
+        centered_variant(master, size, 0.82).save(
+            ICONS / f"favicon-{size}x{size}.png",
             optimize=True,
         )
 

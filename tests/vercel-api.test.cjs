@@ -75,6 +75,20 @@ async function main() {
 
     res = await runRequest({
       method: 'POST',
+      body: { action: 'deleteEverything', printers: [] }
+    });
+    assert.equal(res.statusCode, 400);
+    assert.deepEqual(res.body, { ok: false, code: 'INVALID_PAYLOAD' });
+
+    res = await runRequest({
+      method: 'POST',
+      body: { action: 'syncPrinters', printers: [{ id: {}, name: 'Printer 1', ip: '10.0.0.1' }] }
+    });
+    assert.equal(res.statusCode, 400);
+    assert.deepEqual(res.body, { ok: false, code: 'INVALID_PAYLOAD' });
+
+    res = await runRequest({
+      method: 'POST',
       body: { action: 'syncPrinters', printers: [{ note: 'x'.repeat(1000000) }] }
     });
     assert.equal(res.statusCode, 413);

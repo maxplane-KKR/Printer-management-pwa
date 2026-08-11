@@ -45,6 +45,20 @@ function listen() {
   return new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 }
 
+function waitForSheetRead(previousCount, timeoutMs = 2000) {
+  return new Promise((resolve, reject) => {
+    const startedAt = Date.now();
+    const check = () => {
+      if (sheetReads > previousCount) return resolve();
+      if (Date.now() - startedAt >= timeoutMs) {
+        return reject(new Error('หมดเวลารอการอ่านข้อมูลจาก same-origin API'));
+      }
+      setTimeout(check, 10);
+    };
+    check();
+  });
+}
+
 (async () => {
   await listen();
   const address = server.address();
@@ -63,7 +77,7 @@ function listen() {
 
   const startupReads = sheetReads;
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pageshow')));
-  await page.waitForTimeout(100);
+  await waitForSheetRead(startupReads);
   assert.ok(sheetReads > startupReads, 'pageshow ต้องโหลด snapshot ล่าสุดผ่าน same-origin API');
 
   const manageMetrics = await page.evaluate(() => ({

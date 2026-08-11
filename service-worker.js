@@ -6,6 +6,13 @@ const APP_SHELL = [
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png'
 ];
+const CACHEABLE_PATHS = new Set(APP_SHELL);
+
+function isCacheableStaticRequest(request, url) {
+  return request.method === 'GET' &&
+    url.origin === self.location.origin &&
+    (CACHEABLE_PATHS.has(url.pathname) || url.pathname.startsWith('/assets/'));
+}
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -31,7 +38,7 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  if (request.method !== 'GET' || url.pathname.startsWith('/api/')) {
+  if (!isCacheableStaticRequest(request, url)) {
     return;
   }
 

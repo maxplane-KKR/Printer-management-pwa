@@ -660,6 +660,20 @@
     opacity: 1 !important;
   }
   .container > h1 .header-subtitle { font-size: .5em !important; }
+  .sheet-sync-indicator {
+    position: absolute;
+    z-index: 2;
+    right: 14px;
+    bottom: 8px;
+    padding: 3px 8px;
+    border: 1px solid rgba(32, 37, 43, .35);
+    border-radius: 999px;
+    background: rgba(255, 253, 247, .72);
+    color: var(--ink);
+    font-size: .68rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
 
   @media (max-width: 480px) {
     :root { --compact-nav-height: 60px; }
@@ -709,7 +723,7 @@
 <body>
 
 <div class="container">
-  <h1><span class="header-title">Printer Management Pro</span> <span class="header-subtitle">Enterprise Edition</span></h1>
+  <h1><span class="header-title">Printer Management Pro</span> <span class="header-subtitle">Enterprise Edition</span><small id="sheet-sync-indicator" class="sheet-sync-indicator" role="status" aria-live="polite">กำลังโหลดข้อมูลล่าสุด...</small></h1>
   
   <section class="mobile-view-panel" id="mobile-manage">
   <div class="manage-grid">
@@ -2137,6 +2151,15 @@ document.addEventListener('DOMContentLoaded', function() {
   function setSheetSyncStatus(status) {
     document.documentElement.dataset.sheetSync = status;
     document.body.dataset.sheetSync = status;
+    const indicator = document.getElementById('sheet-sync-indicator');
+    const labels = {
+      pending: 'กำลังเชื่อมต่อชีต...',
+      synced: 'ข้อมูลล่าสุดจากชีต',
+      error: 'บันทึกไม่สำเร็จ',
+      local: 'ข้อมูลสำรองในเครื่อง'
+    };
+    indicator.textContent = labels[status] || labels.local;
+    indicator.dataset.status = status;
   }
 
   async function performSheetSync(action = 'syncPrinters') {
