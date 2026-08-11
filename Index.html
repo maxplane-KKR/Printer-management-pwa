@@ -1,0 +1,2812 @@
+<!DOCTYPE html>
+<html lang="th" data-app-script-url="<?!= webAppUrl ?>">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<base target="_top">
+<title>Printer Management Pro - VPN Edition</title>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<style type="text/css">
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
+
+  :root {
+    --primary: #2c3e50;
+    --secondary: #34495e;
+    --accent: #3498db;
+    --success: #27ae60;
+    --warning: #f39c12;
+    --danger: #e74c3c;
+    --bg-color: #f4f7f9;
+    --border: #e0e4e8;
+  }
+
+  body { font-family: 'Sarabun', sans-serif; background-color: var(--bg-color); color: #333; margin: 0; padding: 20px; }
+  .container { width: 100%; max-width: 1400px; margin: 0 auto; box-sizing: border-box;}
+  h1 { color: var(--primary); font-weight: 700; border-bottom: 3px solid var(--accent); padding-bottom: 10px; display: inline-block; }
+  h2 { color: var(--secondary); font-size: 1.2em; border-left: 4px solid var(--accent); padding-left: 10px; }
+
+  /* --- Layout grids --- */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+  @media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* --- Form & Control Styles --- */
+  .control-box { background-color: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.08); margin-bottom: 25px; }
+  .form-group { margin-bottom: 15px; }
+  .form-group label { display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.9em; color: #555; }
+  .form-group input, .form-group select { box-sizing: border-box; width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; font-family: 'Sarabun', sans-serif; transition: border-color 0.3s; }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 5px rgba(52, 152, 219, 0.3); }
+  
+  /* --- Search & Filters --- */
+  .filter-bar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+  .search-wrapper { position: relative; flex: 1; min-width: 200px; }
+  .search-wrapper input { width: 100%; padding: 10px 30px 10px 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+  .clear-search-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; font-size: 20px; cursor: pointer; color: #95a5a6; }
+  .filter-select { padding: 9px; border: 1px solid #ccc; border-radius: 4px; background: #fff; font-family: 'Sarabun', sans-serif; min-width: 140px; }
+
+  /* --- Button Styles --- */
+  .btn { padding: 10px 15px; border: none; border-radius: 5px; font-size: 0.9em; font-family: 'Sarabun', sans-serif; cursor: pointer; transition: all 0.2s; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary { background-color: var(--accent); color: white; }
+  .btn-primary:hover { background-color: #2980b9; }
+  .btn-success { background-color: var(--success); color: white; }
+  .btn-success:hover { background-color: #229954; }
+  .btn-warning { background-color: var(--warning); color: white; }
+  .btn-warning:hover { background-color: #d48c0d; }
+  .btn-danger { background-color: var(--danger); color: white; }
+  .btn-danger:hover { background-color: #c0392b; }
+  .btn-secondary { background-color: #95a5a6; color: white; }
+  .btn-secondary:hover { background-color: #7f8c8d; }
+  .btn-outline { background-color: transparent; border: 1px solid #ccc; color: #333; }
+  .btn-outline:hover { background-color: #f4f4f4; }
+  .btn-sheet { background-color: #0f766e; color: #ffffff; }
+  .btn-sheet:hover { background-color: #115e59; }
+  .btn-sm { padding: 5px 10px; font-size: 0.85em; }
+
+  .bulk-actions { display: none; padding: 10px; background: #fde8e7; border: 1px solid #fadbd8; border-radius: 4px; margin-bottom: 15px; align-items: center; justify-content: space-between; }
+  .bulk-actions.active { display: flex; }
+
+  /* --- Status Badges --- */
+  .status-badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8em; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+  .status-online { background-color: #d5f5e3; color: #1e8449; }
+  .status-offline { background-color: #fadbd8; color: #c0392b; }
+  .status-warning { background-color: #fcf3cf; color: #b9770e; }
+
+  /* --- Table Styles --- */
+  .table-wrapper { border-radius: 8px; overflow-x: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.08); background: #fff; }
+  .table-container { width: 100%; min-width: 0; border-collapse: collapse; table-layout: fixed; }
+  .table-container th, .table-container td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .table-container thead { background-color: var(--secondary); color: #ffffff; }
+  .table-container thead th { position: relative; font-weight: 600; white-space: normal; }
+  .table-container tbody tr:hover { background-color: #f8fbff; }
+  #main-table th, #main-table td { min-width: 0; overflow-wrap: anywhere; word-break: break-word; }
+  #main-table th:nth-child(1), #main-table td:nth-child(1) { width: 44px; }
+  #main-table th:nth-child(2), #main-table td:nth-child(2) { width: 18%; }
+  #main-table th:nth-child(3), #main-table td:nth-child(3) { width: 17%; }
+  #main-table th:nth-child(4), #main-table td:nth-child(4) { width: 12%; }
+  #main-table th:nth-child(5), #main-table td:nth-child(5) { width: 16%; }
+  #main-table th:nth-child(6), #main-table td:nth-child(6) { width: 13%; }
+  #main-table th:nth-child(8), #main-table td:nth-child(8) { width: 88px; }
+  
+  /* Link Styles */
+  .printer-link { color: var(--primary); text-decoration: none; transition: color 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+  .printer-link:hover { color: var(--accent); text-decoration: underline; }
+  .printer-link .icon { font-size: 0.8em; opacity: 0.7; }
+
+  /* Copyable Text */
+  .copyable { cursor: copy; position: relative; font-family: monospace; font-size: 1.1em; color: var(--primary); }
+  .copyable:hover { color: var(--accent); font-weight: bold; }
+  .copyable::after { content: '📋'; font-size: 0.8em; margin-left: 5px; opacity: 0; transition: opacity 0.2s; }
+  .copyable:hover::after { opacity: 1; }
+
+  /* Sorting */
+  .sortable-header { cursor: pointer; user-select: none; }
+  .sortable-header:hover { background-color: #4a627a; }
+  .sortable-header::after { content: '↕'; position: absolute; right: 8px; opacity: 0.3; }
+  .sortable-header.sorted-asc::after { content: '↑'; opacity: 1; }
+  .sortable-header.sorted-desc::after { content: '↓'; opacity: 1; }
+
+  /* Checkbox styling */
+  input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--accent); }
+
+  /* --- Pagination --- */
+  .pagination-controls { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .pagination-controls .btn:disabled { background-color: #bdc3c7; cursor: not-allowed; opacity: 0.5; }
+  .page-info { font-weight: 600; color: var(--secondary); }
+
+  /* --- Tools Bar --- */
+  .tools-bar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; padding: 15px; background: #fff; border-radius: 8px; border-left: 4px solid #0f766e; }
+  .tools-section-title { width: 100%; margin-bottom: 5px; font-weight: bold; color: #0f766e; }
+  
+  .timestamp { font-size: 0.75em; color: #95a5a6; display: block; margin-top: 4px; }
+  .vlan-badge { background: #e0e4e8; color: #2c3e50; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; font-family: monospace;}
+</style>
+<style data-theme="claymorphism">
+  :root {
+    --primary: #20252b;
+    --secondary: #374151;
+    --accent: #3b82c4;
+    --success: #3f8f62;
+    --warning: #c98522;
+    --danger: #c95757;
+    --bg-color: #f2eee4;
+    --surface: #fffdf7;
+    --surface-muted: #e7e1d4;
+    --surface-raised: #fffefb;
+    --border: #20252b;
+    --text: #20252b;
+    --text-muted: #5f6872;
+    --ink: #20252b;
+    --blue: #a9d8f5;
+    --yellow: #f4c95d;
+    --coral: #f4897d;
+    --mint: #a8d5ba;
+    --clay-shadow: 8px 8px 0 rgba(32,37,43,.94), inset 2px 2px 0 rgba(255,255,255,.82), inset -4px -4px 10px rgba(32,37,43,.08);
+    --clay-shadow-small: 5px 5px 0 rgba(32,37,43,.94), inset 2px 2px 0 rgba(255,255,255,.72), inset -3px -3px 8px rgba(32,37,43,.08);
+    --clay-inset: inset 2px 2px 0 rgba(255,255,255,.78), inset -3px -3px 8px rgba(32,37,43,.1);
+  }
+  html { overflow-x: hidden; }
+  @supports (overflow: clip) { html { overflow-x: clip; } }
+  * { box-sizing: border-box; min-width: 0; }
+  body {
+    background: linear-gradient(135deg, #f2eee4 0%, #f7f3ea 48%, #e8f1f3 100%);
+    color: var(--text);
+    padding: max(14px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .container { width: 100%; max-width: 1480px; min-width: 0; }
+  h1 {
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    display: block;
+    margin: 0 0 24px;
+    padding: 18px 22px;
+    border-radius: 22px;
+    background: var(--yellow);
+    box-shadow: var(--clay-shadow);
+    letter-spacing: -.02em;
+  }
+  h1 span { color: var(--ink) !important; opacity: .72; }
+  h2 { color: var(--ink); border-left: 5px solid var(--coral); padding: 0 0 0 12px; margin: 0 0 18px; font-size: 1.1rem; letter-spacing: .01em; }
+  .grid-2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .control-box, .filter-bar, .tools-bar, .table-wrapper {
+    border: 2px solid var(--ink);
+    background: var(--surface);
+    box-shadow: var(--clay-shadow);
+  }
+  .control-box { padding: clamp(18px, 2.4vw, 28px); border-radius: 22px; margin-bottom: 26px; }
+  .control-box[style] { background: var(--surface) !important; border: 2px solid var(--ink) !important; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { color: var(--text); margin-bottom: 7px; font-size: .86rem; font-weight: 700; letter-spacing: .01em; }
+  .form-group input, .form-group select, .search-wrapper input, .filter-select {
+    color: var(--text); background: var(--surface-raised); border: 2px solid var(--ink); border-radius: 14px;
+    box-shadow: var(--clay-inset); min-height: 44px; max-width: 100%; transition: box-shadow .18s ease, transform .18s ease, background-color .18s ease;
+  }
+  .form-group input::placeholder, .search-wrapper input::placeholder { color: #7b838c; }
+  .form-group input:focus, .form-group select:focus, .search-wrapper input:focus, .filter-select:focus {
+    border-color: var(--ink); outline: 3px solid rgba(59,130,196,.35); box-shadow: var(--clay-inset), 4px 4px 0 var(--blue); transform: translate(-1px,-1px);
+  }
+  .btn {
+    min-height: 44px; max-width: 100%; padding: 10px 16px; border: 2px solid var(--ink); border-radius: 13px;
+    box-shadow: var(--clay-shadow-small); font-weight: 700; overflow-wrap: anywhere; transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  }
+  .btn:hover { filter: saturate(1.08) brightness(1.03); transform: translate(-2px,-2px); }
+  .btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn:focus-visible, .clear-search-btn:focus-visible, input[type="checkbox"]:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .btn-primary { background: var(--blue); color: var(--ink); }
+  .btn-success { background: var(--mint); color: var(--ink); }
+  .btn-warning { background: var(--yellow); color: var(--ink); }
+  .btn-danger { background: var(--coral); color: var(--ink); }
+  .btn-secondary { background: #d7d1c5; color: var(--ink); }
+  .btn-outline { background: var(--surface-raised); border-color: var(--ink); color: var(--ink); }
+  .btn-outline:hover { background: var(--blue); }
+  .btn-sm { min-height: 36px; padding: 8px 12px; border-radius: 11px; }
+  .tools-bar { padding: 18px; border-radius: 22px; border-left: 5px solid var(--ink); margin-bottom: 24px; }
+  .tools-section-title { color: var(--ink); letter-spacing: .02em; }
+  .tools-bar > div[style*="border-top"] { border-top: 2px solid var(--ink) !important; }
+  .filter-bar { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(140px, 1fr)) auto; gap: 10px; align-items: stretch; padding: 16px; border-radius: 20px; margin: 0 0 18px; }
+  .search-wrapper { min-width: 0; width: 100%; }
+  .search-wrapper input { padding-left: 15px; }
+  .clear-search-btn { color: var(--ink); }
+  .bulk-actions { padding: 12px 16px; background: #ffe1dc; border: 2px solid var(--ink); border-radius: 15px; box-shadow: var(--clay-shadow-small); }
+  .status-badge { border: 2px solid var(--ink); border-radius: 999px; padding: 5px 9px; box-shadow: var(--clay-inset); }
+  .status-online { background: var(--mint); color: var(--ink); }
+  .status-offline { background: var(--coral); color: var(--ink); }
+  .status-warning { background: var(--yellow); color: var(--ink); }
+  .table-wrapper { width: 100%; max-width: 100%; border-radius: 20px; padding: 8px; overflow-x: hidden; }
+  .table-container { background: transparent; }
+  .table-container th, .table-container td { border-bottom: 2px solid rgba(32,37,43,.18); padding: 14px 15px; }
+  .table-container thead { background: var(--ink); color: #fffdf7; }
+  .table-container thead th:first-child { border-radius: 12px 0 0 12px; }
+  .table-container thead th:last-child { border-radius: 0 12px 12px 0; }
+  .table-container tbody tr { transition: background-color .18s ease; }
+  .table-container tbody tr:hover { background: #eaf5fb; }
+  .printer-link { color: var(--ink); }
+  .printer-link:hover, .copyable:hover { color: #1c6b9d; }
+  .copyable { color: var(--ink); }
+  .sortable-header:hover { background: #374151; }
+  .vlan-badge { background: var(--surface-muted); color: var(--ink); border: 1px solid var(--ink); border-radius: 8px; box-shadow: var(--clay-inset); }
+  input[type="checkbox"] { accent-color: #1c6b9d; }
+  .pagination-controls { margin: 24px 0 8px; gap: 10px; }
+  .page-info { color: var(--ink); padding: 8px 14px; border: 2px solid var(--ink); border-radius: 11px; background: var(--surface-raised); box-shadow: var(--clay-inset); }
+  .pagination-controls .btn:disabled { background: #c9c4bb; box-shadow: none; }
+  .grid-2[style*="text-align: center"] > div { background: var(--blue) !important; border: 2px solid var(--ink) !important; border-radius: 18px !important; box-shadow: var(--clay-shadow-small) !important; }
+  #stat-total { color: var(--ink) !important; }
+  #stat-offline { color: #a63e3e !important; }
+  img, svg, video, canvas, iframe { max-width: 100%; }
+  button, input, select, textarea { max-width: 100%; }
+  @media (max-width: 1120px) {
+    .filter-bar { grid-template-columns: minmax(0, 1fr) repeat(2, minmax(140px, 1fr)); }
+    .search-wrapper { grid-column: 1 / -1; }
+    #reset-filters-btn { grid-column: 1 / -1; width: 100%; }
+  }
+  @media (max-width: 768px) {
+    body { padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+    h1 { padding: 16px 18px; font-size: 1.45rem; }
+    .grid-2 { grid-template-columns: minmax(0, 1fr); }
+    .control-box, .tools-bar, .filter-bar, .table-wrapper { border-radius: 18px; }
+    .filter-bar { grid-template-columns: minmax(0, 1fr); }
+    .search-wrapper, #filter-location, #filter-type, #filter-status, #reset-filters-btn { grid-column: auto; width: 100%; min-width: 0; }
+    .tools-bar .btn { flex: 1 1 100%; }
+    .pagination-controls { justify-content: stretch; }
+    .pagination-controls .btn { flex: 1 1 auto; min-width: 44px; }
+    #rows-per-page { width: 100%; margin-left: 0 !important; }
+  }
+  @media (max-width: 420px) {
+    body { font-size: 15px; }
+    h1 { font-size: 1.25rem; }
+    h1 span { display: block; margin-top: 6px; font-size: .7em !important; }
+    .control-box, .tools-bar, .filter-bar { padding: 14px; }
+    .btn { padding: 9px 11px; }
+    .pagination-controls { gap: 6px; }
+    .pagination-controls .btn { font-size: .8rem; padding-inline: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+  }
+</style>
+<style data-mobile-nav="native">
+  .mobile-tabbar { display: none; }
+  @media (max-width: 1024px) {
+    .container > .grid-2 { grid-template-columns: minmax(0, 1fr); }
+    .tools-bar .btn { flex: 1 1 calc(50% - 10px); }
+    .btn-sm { min-height: 44px; }
+    .search-wrapper input { padding-right: 52px; }
+    .clear-search-btn { right: 2px; width: 44px; height: 44px; }
+  }
+  @media (max-width: 1024px) {
+    body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
+    .container > .grid-2,
+    .container > .grid-2 > div { display: contents; }
+    .mobile-view-panel {
+      display: none !important;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+    }
+    body[data-mobile-view="form"] #mobile-form { display: block !important; }
+    body[data-mobile-view="tools"] #mobile-tools { display: flex !important; }
+    body[data-mobile-view="overview"] #mobile-overview { display: block !important; }
+    body[data-mobile-view="list"] #mobile-list { display: block !important; }
+    .control-box .grid-2[style*="text-align: center"] {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .mobile-tabbar {
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      padding: 8px 8px max(8px, env(safe-area-inset-bottom));
+      border: 2px solid var(--ink);
+      border-bottom: 0;
+      border-radius: 18px 18px 0 0;
+      background: rgba(255,253,247,.96);
+      box-shadow: 0 -5px 0 var(--ink), inset 2px 2px 0 rgba(255,255,255,.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+    .mobile-tab {
+      min-width: 0;
+      min-height: 54px;
+      padding: 5px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      border: 2px solid transparent;
+      border-radius: 12px;
+      color: var(--ink);
+      font-size: .7rem;
+      font-weight: 700;
+      line-height: 1.1;
+      text-align: center;
+      text-decoration: none;
+      overflow-wrap: anywhere;
+    }
+    .mobile-tab:hover, .mobile-tab:focus-visible, .mobile-tab[aria-current="page"] { background: var(--blue); border-color: var(--ink); outline: none; }
+    .mobile-tab:active { transform: translateY(2px); }
+    .mobile-tab-icon { font-size: 1.35rem; line-height: 1; }
+  }
+  @media (max-width: 360px) {
+    .mobile-tabbar { gap: 3px; padding: 6px 6px max(6px, env(safe-area-inset-bottom)); }
+    .mobile-tab { min-height: 50px; font-size: .64rem; }
+    .mobile-tab-icon { font-size: 1.18rem; }
+    .control-box .grid-2[style*="text-align: center"] { grid-template-columns: minmax(0, 1fr); }
+  }
+  body[data-layout="desktop"] { padding-bottom: max(14px, env(safe-area-inset-bottom)); }
+  body[data-layout="desktop"] .mobile-tabbar { display: none !important; }
+  body[data-layout="desktop"] .container > .grid-2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  body[data-layout="desktop"] .container > .grid-2 > div { display: block; }
+  body[data-layout="desktop"] #mobile-form,
+  body[data-layout="desktop"] #mobile-overview,
+  body[data-layout="desktop"] #mobile-list { display: block !important; }
+  body[data-layout="desktop"] #mobile-tools { display: flex !important; }</style>
+<style data-mobile-table="compact">
+  .mobile-status-inline, .mobile-device-meta, .mobile-note-inline, .mobile-ip-inline { display: none; }
+  @media (max-width: 1024px) {
+    #main-table { width: 100%; min-width: 0 !important; table-layout: fixed; }
+    #main-table th:nth-child(1), #main-table td:nth-child(1) { width: 34px; padding-inline: 5px; }
+    #main-table th:nth-child(2), #main-table td:nth-child(2) { width: auto; }
+    #main-table th:nth-child(3), #main-table td:nth-child(3) { width: 130px; }
+    #main-table th:nth-child(8), #main-table td:nth-child(8) { width: 76px; padding-inline: 5px; }
+    #main-table th:nth-child(4), #main-table td:nth-child(4),
+    #main-table th:nth-child(5), #main-table td:nth-child(5),
+    #main-table th:nth-child(6), #main-table td:nth-child(6),
+    #main-table th:nth-child(7), #main-table td:nth-child(7) { display: none; }
+    #main-table td:nth-child(2), #main-table td:nth-child(3) { overflow-wrap: anywhere; word-break: break-word; }
+    #main-table td:nth-child(3) .copyable { font-size: .92rem; }
+    #main-table td:nth-child(8) .btn { display: block; width: 100%; min-height: 44px; padding: 5px 4px; }
+    .mobile-status-inline, .mobile-device-meta, .mobile-note-inline { display: block; }
+    .mobile-status-inline { margin-top: 7px; }
+    .mobile-device-meta { margin-top: 6px; color: var(--text-muted); font-size: .8rem; font-weight: 700; }
+    .mobile-note-inline { margin-top: 5px; color: var(--text-muted); font-size: .76rem; line-height: 1.35; }
+  }
+  @media (max-width: 480px) {
+    #main-table th:nth-child(3), #main-table td:nth-child(3) { display: none; }
+    #main-table th:nth-child(8), #main-table td:nth-child(8) { width: 84px; }
+    .mobile-ip-inline { display: block; margin-top: 6px; color: var(--text-muted); font: 700 .82rem/1.35 monospace; overflow-wrap: anywhere; }
+  }
+</style>
+<style data-compact-app="two-tab">
+  :root {
+    --app-height: 100dvh;
+    --compact-row-height: 92px;
+    --compact-nav-height: 70px;
+    --compact-card-padding: clamp(10px, 1.8vw, 18px);
+    --compact-card-gap: clamp(7px, 1.2vw, 12px);
+  }
+  .manage-grid, .printer-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+  .manage-grid > *, .printer-form-grid > * { min-width: 0; }
+  .tool-actions-grid { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
+  .btn, .mobile-tab { touch-action: manipulation; }
+
+  @media (max-width: 1024px) {
+    html, body { width: 100%; height: 100dvh; min-height: 0; overflow: hidden; }
+    body {
+      height: 100dvh;
+      overflow: hidden;
+      padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right))
+        calc(var(--compact-nav-height) + env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+    }
+    .container {
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: var(--compact-card-gap);
+      overflow: hidden;
+    }
+    .container > h1 {
+      margin: 0;
+      padding: 13px 17px;
+      min-height: clamp(78px, 9.5dvh, 104px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-start;
+      border-radius: 16px;
+      font-size: clamp(1.55rem, 5.6vw, 2.25rem);
+      line-height: 1.15;
+      box-shadow: 4px 4px 0 var(--ink), inset 2px 2px 0 rgba(255,255,255,.82);
+    }
+    .container > h1 span { font-size: .5em !important; font-weight: 700; letter-spacing: 0; }
+    .mobile-view-panel { display: none !important; min-height: 0; min-width: 0; overflow: hidden; }
+    body[data-mobile-view="manage"] #mobile-manage { display: block !important; }
+    body[data-mobile-view="list"] #mobile-list { display: grid !important; }
+
+    #mobile-manage, .manage-grid { width: 100%; height: 100%; min-height: 0; }
+    .manage-grid {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1.45fr) minmax(0, 1fr) minmax(0, .65fr);
+      gap: 8px;
+      align-items: stretch;
+      align-content: stretch;
+    }
+    .manage-grid > div:last-child { display: contents; }
+    #mobile-form, #mobile-tools, #mobile-overview { margin: 0; min-height: 0; }
+    #mobile-form { display: grid; grid-template-rows: auto minmax(0, 1fr); padding: var(--compact-card-padding); overflow: hidden; }
+    #mobile-form h2, #mobile-overview h2 { margin: 0; font-size: .95rem; }
+    #printer-form { min-height: 0; display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: var(--compact-card-gap); align-content: stretch; }
+    #printer-form > .form-group, #printer-form > .printer-form-grid, #printer-form > div:last-child { width: 100%; align-self: center; }
+    #printer-form > div:last-child { align-self: end; }
+    #mobile-form .form-group { margin-bottom: 0; }
+    #mobile-form .form-group label { margin-bottom: 3px; font-size: .76rem; }
+    #mobile-form .form-group input, #mobile-form .form-group select { min-height: 44px; padding: 8px 10px; }
+    .printer-form-grid { gap: var(--compact-card-gap); }
+    #mobile-form form > div:last-child { margin-top: 2px !important; }
+    #cancel-edit-btn { margin-top: 6px !important; }
+
+    #mobile-tools { display: grid; grid-template-rows: auto minmax(0, 1fr); padding: var(--compact-card-padding); overflow: hidden; }
+    .tool-actions-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--compact-card-gap); width: 100%; }
+    #mobile-tools .tool-actions-grid { height: 100%; align-self: stretch; grid-template-rows: repeat(2, minmax(44px, 1fr)); }
+    .tool-actions-grid .btn { width: 100%; height: 100%; min-height: 44px; padding: 6px; font-size: clamp(.75rem, 1.8vw, 1rem); }
+    .tools-section-title { margin-bottom: 0; font-size: .76rem; }
+    #mobile-overview { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: var(--compact-card-gap); padding: var(--compact-card-padding); overflow: hidden; }
+    #mobile-overview .grid-2 { height: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    #mobile-overview .grid-2 > div { padding: 8px !important; }
+    #mobile-overview .grid-2 > div { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    #mobile-overview #stat-total, #mobile-overview #stat-offline { font-size: clamp(2.1rem, 4.8vw, 3.5rem) !important; line-height: 1; }
+    #mobile-overview .grid-2 > div > div:last-child { font-size: clamp(1rem, 2.1vw, 1.25rem) !important; line-height: 1.25; }
+
+    #mobile-list {
+      grid-template-rows: auto auto minmax(0, 1fr) auto;
+      gap: 8px;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+    }
+    #mobile-list .filter-bar {
+      grid-template-columns: minmax(170px, 2fr) repeat(3, minmax(105px, 1fr)) auto;
+      gap: 6px;
+      margin: 0;
+      padding: 8px;
+      border-radius: 14px;
+      box-shadow: 4px 4px 0 var(--ink);
+    }
+    #mobile-list .filter-bar input, #mobile-list .filter-bar select, #mobile-list .filter-bar .btn { min-height: 44px; }
+    #mobile-list .bulk-actions { margin: 0; min-height: 44px; }
+    #mobile-list .filter-bar { grid-row: 1; }
+    #mobile-list .bulk-actions { grid-row: 2; }
+    #mobile-list .table-wrapper { grid-row: 3; }
+    #mobile-list .pagination-controls { grid-row: 4; }
+    #mobile-list .table-wrapper { min-height: 0; height: 100%; padding: 4px; border-radius: 14px; overflow: hidden; box-shadow: 4px 4px 0 var(--ink); }
+    #main-table { height: auto; }
+    #main-table thead tr { height: 42px; }
+    #main-table tbody tr { height: var(--compact-row-height); max-height: var(--compact-row-height); }
+    #main-table th, #main-table td { padding-block: 4px; overflow: hidden; }
+    #main-table tbody td { height: var(--compact-row-height); max-height: var(--compact-row-height); }
+    #main-table td > *, .mobile-device-meta, .mobile-note-inline, .timestamp {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    #main-table td:nth-child(8) { white-space: nowrap; }
+    #main-table th:nth-child(8), #main-table td:nth-child(8) { width: 98px; }
+    #main-table td:nth-child(8) .btn { display: inline-flex; width: 44px; min-width: 44px; min-height: 44px; padding: 3px; }
+    #main-table .mobile-status-inline { display: inline-flex; margin: 3px 0 0 5px; vertical-align: middle; }
+    #main-table .mobile-ip-inline, #main-table .mobile-device-meta { display: block; margin-top: 3px; line-height: 1.2; }
+    #main-table .mobile-note-inline, #main-table .timestamp { display: none !important; }
+    #mobile-list .pagination-controls { min-height: 48px; margin: 0; flex-wrap: nowrap; gap: 6px; }
+    #mobile-list .pagination-controls .btn { min-height: 44px; }
+    #rows-per-page { display: none; }
+    #first-page-btn, #last-page-btn { display: none; }
+
+    .mobile-tabbar {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      min-height: var(--compact-nav-height);
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+    .mobile-tab { min-height: 50px; font-size: .78rem; }
+  }
+
+  @media (max-width: 767px) {
+    .manage-grid { gap: var(--compact-card-gap); }
+    #mobile-overview .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: minmax(72px, auto); align-content: start; }
+    #mobile-overview .grid-2 > div { display: flex; flex-direction: column; justify-content: center; }
+    #mobile-list .filter-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #mobile-list .search-wrapper { grid-column: 1 / -1; }
+    #mobile-list .filter-bar .filter-select, #mobile-list #reset-filters-btn { grid-column: auto; }
+    #filter-status { grid-column: 1 / 2 !important; }
+    #mobile-list .page-info { padding: 6px 8px; font-size: .78rem; white-space: nowrap; }
+    #mobile-list .pagination-controls .btn { padding-inline: 9px; }
+  }
+
+  @media (min-width: 600px) and (max-width: 1024px) {
+    :root { --compact-nav-height: 92px; }
+    .container > h1 { min-height: clamp(156px, 16dvh, 200px); padding-block: 18px; align-items: center; text-align: center; font-size: clamp(2.25rem, 5vw, 3rem); }
+    .container > h1 span { display: block; margin-top: 6px; font-size: .5em !important; }
+    #mobile-tools .tool-actions-grid { height: auto; align-self: center; grid-template-rows: repeat(2, clamp(64px, 7.2dvh, 82px)); }
+    .mobile-tab { min-height: 72px; font-size: 1rem; }
+    .mobile-tab-icon { font-size: 1.6rem; }
+  }
+
+  @media (max-width: 480px) {
+    .tool-actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #mobile-tools .tool-actions-grid { grid-template-rows: repeat(3, minmax(44px, 1fr)); }
+  }
+
+  @media (max-height: 540px) and (max-width: 1024px) {
+    :root { --compact-card-padding: 4px; --compact-card-gap: 4px; --compact-nav-height: 66px; }
+    .manage-grid { grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr); grid-template-rows: minmax(0, 1fr); }
+    .manage-grid > div:last-child { min-height: 0; display: grid; grid-template-rows: minmax(121px, 1fr) 88px; gap: 7px; overflow: hidden; }
+    .container > h1 { padding-block: 7px; }
+    #mobile-tools .tool-actions-grid { gap: 4px; }
+    #mobile-tools .tool-actions-grid .btn { height: 44px; min-height: 44px; padding: 2px 4px; line-height: 1; }
+    #mobile-tools .tools-section-title { font-size: .66rem; }
+    #mobile-overview { height: 88px; padding: 4px; gap: 0; }
+    #mobile-overview h2 { display: none; }
+    #mobile-overview .grid-2 { height: 100%; min-height: 0; gap: 4px; }
+    #mobile-overview .grid-2 > div { height: 100%; min-height: 0; padding: 2px !important; }
+    #mobile-overview #stat-total, #mobile-overview #stat-offline { font-size: 1.15rem !important; }
+    #mobile-overview .grid-2 > div > div:last-child { font-size: .68rem !important; }
+    .mobile-tab { min-height: 48px; font-size: .78rem; }
+    .mobile-tab-icon { font-size: 1.18rem; }
+  }
+
+  @media (max-height: 800px) and (max-width: 1024px) {
+    :root {
+      --compact-card-padding: clamp(4px, 1dvh, 8px);
+      --compact-card-gap: clamp(4px, .8dvh, 5px);
+    }
+    .container > h1 { min-height: 58px; padding-block: 8px; font-size: 1.55rem; }
+    #mobile-overview { padding: 4px; gap: 4px; }
+    #mobile-overview .grid-2 { height: calc(100% - 4px); align-self: start; }
+    #mobile-overview .grid-2 > div {
+      box-shadow: 2px 2px 0 rgba(32, 37, 43, .94), inset 2px 2px 0 rgba(255,255,255,.72), inset -3px -3px 8px rgba(32,37,43,.08) !important;
+    }
+    #mobile-overview #stat-total, #mobile-overview #stat-offline { font-size: clamp(2rem, 4.4vw, 2.8rem) !important; }
+    .tool-actions-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #mobile-tools .tool-actions-grid { grid-template-rows: repeat(2, minmax(44px, 1fr)); }
+  }
+
+  @media (max-width: 360px) and (max-height: 800px) {
+    #mobile-overview { padding: 8px; }
+    #mobile-form .form-group label {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      line-height: 1.1;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .manage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #mobile-manage, #mobile-list { display: block; }
+  }
+
+  .container > h1 {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .container > h1::before {
+    content: "";
+    position: absolute;
+    inset: -6% 3% -6% auto;
+    width: 30%;
+    background: url("assets/printer-network-watermark.png") center / contain no-repeat;
+    opacity: .12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .container > h1 .header-title,
+  .container > h1 .header-subtitle {
+    position: relative;
+    z-index: 1;
+  }
+  .container > h1 .header-title {
+    color: var(--ink) !important;
+    font-size: 1em !important;
+    margin-top: 0 !important;
+    opacity: 1 !important;
+  }
+  .container > h1 .header-subtitle { font-size: .5em !important; }
+
+  @media (max-width: 480px) {
+    .container > h1::before { right: -3%; width: 42%; }
+  }
+
+  @media (max-height: 540px) and (max-width: 1024px) {
+    .container > h1::before { right: 1%; width: 24%; opacity: .09; }
+  }
+
+  @media (min-width: 1025px) {
+    .container > h1::before { width: 24%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1><span class="header-title">Printer Management Pro</span> <span class="header-subtitle">Enterprise Edition</span></h1>
+  
+  <section class="mobile-view-panel" id="mobile-manage">
+  <div class="manage-grid">
+    <!-- Form Section -->
+    <div class="control-box" id="mobile-form">
+      <h2 id="form-title">เพิ่มเครื่องพิมพ์ใหม่ (Add New Printer)</h2>
+      <form id="printer-form">
+        <input type="hidden" id="printer-id">
+        
+        <div class="form-group">
+          <label for="printer-name">ชื่อเครื่องพิมพ์ (Printer Name) *</label>
+          <input type="text" id="printer-name" required placeholder="ex. RICOH-IT-FL1">
+        </div>
+        
+        <div class="printer-form-grid">
+          <div class="form-group">
+            <label for="printer-ip">IP Address *</label>
+            <input type="text" id="printer-ip" required placeholder="192.168.x.x">
+          </div>
+          <div class="form-group">
+            <label for="printer-location">สถานที่ (Location) *</label>
+            <input type="text" id="printer-location" list="location-list" required autocomplete="off">
+            <datalist id="location-list"></datalist>
+          </div>
+          <div class="form-group">
+            <label for="printer-type">รุ่น / ประเภท (Type) *</label>
+            <input type="text" id="printer-type" list="type-list" required autocomplete="off">
+            <datalist id="type-list"></datalist>
+          </div>
+          <div class="form-group">
+            <label for="printer-note">หมายเหตุ / รายละเอียด (Notes)</label>
+            <input type="text" id="printer-note" placeholder="ex. หมดประกัน 12/2026, หมึกใกล้หมด">
+          </div>
+        </div>
+        
+        <div style="margin-top: 15px;">
+          <button type="submit" id="submit-btn" class="btn btn-success" style="width: 100%;">บันทึกข้อมูล</button>
+          <button type="button" id="cancel-edit-btn" class="btn btn-secondary" style="width: 100%; margin-top: 10px; display: none;">ยกเลิกการแก้ไข</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- System Tools Section -->
+    <div>
+      <div class="tools-bar" id="mobile-tools">
+        <div class="tools-section-title">ฐานข้อมูล (Database Tools)</div>
+        <div class="tool-actions-grid">
+          <button id="backup-btn" class="btn btn-primary btn-sm">💾 Backup</button>
+          <button id="restore-btn" class="btn btn-warning btn-sm">↩️ Restore</button>
+          <button id="sync-sheet-btn" class="btn btn-sheet btn-sm">☁️ บันทึกลงชีต</button>
+          <button id="export-csv-btn" class="btn btn-success btn-sm">📊 Export CSV</button>
+          <button id="copy-ping-script-btn" class="btn btn-danger btn-sm" title="คัดลอกคำสั่งไปรันบน PowerShell เพื่อเช็คสถานะผ่าน TCP">1. 📋 สคริปต์ TCP</button>
+          <button id="import-ping-results-btn" class="btn btn-success btn-sm" title="นำเข้าผลลัพธ์จาก PowerShell เพื่ออัปเดตตาราง">2. 📥 อัปเดตสถานะ</button>
+        </div>
+      </div>
+
+      <div class="control-box" id="mobile-overview" style="background-color: #f8f9fa; border: 1px solid #e9ecef;">
+        <h2>ภาพรวมระบบ (Overview)</h2>
+        <div class="grid-2" style="text-align: center;">
+          <div style="padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <div style="font-size: 2em; font-weight: bold; color: var(--primary);" id="stat-total">0</div>
+            <div style="color: #7f8c8d; font-size: 0.9em;">เครื่องทั้งหมด</div>
+          </div>
+          <div style="padding: 15px; background: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <div style="font-size: 2em; font-weight: bold; color: var(--danger);" id="stat-offline">0</div>
+            <div style="color: #7f8c8d; font-size: 0.9em;">ขาดการติดต่อ (Offline)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </section>
+
+  <section class="mobile-view-panel" id="mobile-list">
+  <div class="filter-bar">
+    <div class="search-wrapper">
+      <input type="text" id="search-input" aria-label="ค้นหาเครื่องพิมพ์" placeholder="🔍 ค้นหา ชื่อ, IP, Location...">
+      <button type="button" id="clear-search-btn" class="clear-search-btn" aria-label="ล้างคำค้นหา" style="display: none;">&times;</button>
+    </div>
+    <select id="filter-location" class="filter-select" aria-label="กรองตามสถานที่"><option value="">-- ทุกสถานที่ (All Locations) --</option></select>
+    <select id="filter-type" class="filter-select" aria-label="กรองตามรุ่น"><option value="">-- ทุกรุ่น (All Types) --</option></select>
+    <select id="filter-status" class="filter-select" aria-label="กรองตามสถานะ">
+      <option value="">-- ทุกสถานะ (All Status) --</option>
+      <option value="online">Online</option>
+      <option value="offline">Offline</option>
+      <option value="unknown">Unknown</option>
+    </select>
+    
+    <button id="reset-filters-btn" class="btn btn-outline" style="min-width: 100px;" title="ล้างตัวกรองและแสดงทั้งหมด">🔄 แสดงทั้งหมด</button>
+  </div>
+
+  <div id="bulk-action-bar" class="bulk-actions">
+    <span id="selected-count-text">เลือกแล้ว 0 รายการ</span>
+    <button id="bulk-delete-btn" class="btn btn-danger btn-sm">🗑️ ลบรายการที่เลือก</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table class="table-container" id="main-table">
+      <thead>
+        <tr>
+          <th width="40" style="text-align: center;"><input type="checkbox" id="select-all-cb"></th>
+          <th class="sortable-header" data-sort="name">ชื่อเครื่อง</th>
+          <th class="sortable-header" data-sort="ip">IP Address</th>
+          <th class="sortable-header" data-sort="location">สถานที่</th>
+          <th class="sortable-header" data-sort="type">รุ่น/ประเภท</th>
+          <th class="sortable-header" data-sort="status">สถานะ (Status)</th>
+          <th>หมายเหตุ</th>
+          <th width="100" style="text-align: center;">จัดการ</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Rows will be rendered here by JS -->
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="pagination-controls">
+    <button id="first-page-btn" class="btn btn-secondary" aria-label="หน้าแรก">&lt;&lt;</button>
+    <button id="prev-page-btn" class="btn btn-primary">&lt; ก่อนหน้า</button>
+    <span id="page-info" class="page-info">หน้า 1 / 1</span>
+    <button id="next-page-btn" class="btn btn-primary">ถัดไป &gt;</button>
+    <button id="last-page-btn" class="btn btn-secondary" aria-label="หน้าสุดท้าย">&gt;&gt;</button>
+    
+    <select id="rows-per-page" class="filter-select" style="min-width: 120px; padding: 8px; margin-left: 10px;">
+      <option value="15">15 รายการ/หน้า</option>
+      <option value="50">50 รายการ/หน้า</option>
+      <option value="100">100 รายการ/หน้า</option>
+      <option value="all">แสดงทั้งหมดรวดเดียว</option>
+    </select>
+  </div>
+  </section>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  
+  const generateId = () => crypto.randomUUID ? crypto.randomUUID() : 'id-' + new Date().getTime() + '-' + Math.random().toString(36).substr(2, 9);
+  
+  const getTimestamp = () => {
+      const now = new Date();
+      return `${now.getDate().toString().padStart(2, '0')}/${(now.getMonth()+1).toString().padStart(2, '0')}/${now.getFullYear()} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  };
+
+  const getExportFilename = (extension) => {
+      const now = new Date();
+      const d = [now.getFullYear(), (now.getMonth()+1).toString().padStart(2, '0'), now.getDate().toString().padStart(2, '0')].join('-');
+      const t = [now.getHours().toString().padStart(2, '0'), now.getMinutes().toString().padStart(2, '0')].join('-');
+      return `Printers_Export_${d}_${t}.${extension}`;
+  };
+
+  const rawInitialData = [
+  {
+    "id": "b3e8b6ed-b16c-4356-86e4-1eb7484fede2",
+    "name": "PT-Label",
+    "ip": "10.170.130.21",
+    "location": "PT",
+    "type": "TSC-TE210",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "f24ba727-9e83-432e-92fa-e319eb0fe166",
+    "name": "RICOH IM 550",
+    "ip": "10.170.130.22",
+    "location": "WARD10",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "HP LaserJet MFP E52645",
+    "ip": "10.170.130.25",
+    "location": "WARD7",
+    "type": "HP LaserJet MFP E52645",
+    "details": "HP LaserJet MFP E52645",
+    "id": "2ff113f2-a4a8-4013-adb5-904295fe3f23",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "729f9fdb-a151-4739-88f7-e4a85eeedeef",
+    "name": "HP LaserJet MFP E52645",
+    "ip": "10.170.130.23",
+    "location": "WARD8",
+    "type": "HP LaserJet MFP E52645",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "a5ae5a1d-56d4-4da1-a36c-723f7cde2897",
+    "name": "SAMSUNG M4070FR",
+    "ip": "10.170.130.24",
+    "location": "WARD9",
+    "type": "SAMSUNG SL-M4070FR",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "d1a01e26-7b01-4736-8621-e2283a9b27a2",
+    "name": "WARD7_Label",
+    "ip": "10.170.130.26",
+    "location": "WARD7_BD1",
+    "type": "TSC-TE210",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "0c4705fb-3cf2-48df-80aa-b0cf49cc3f8b",
+    "name": "RICOH IM 550",
+    "ip": "10.170.130.27",
+    "location": "INFOR-B2-FLG",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "66c47790-ad13-4393-ad7e-27bf5a97083f",
+    "name": "WARD6_Label",
+    "ip": "10.170.130.31",
+    "location": "WARD6_BD1",
+    "type": "TSC-TE210",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "5b5cd898-df4f-44bb-b7bc-21fad8c9ecbb",
+    "name": "INFOR-B1-FLG GUIDE",
+    "ip": "10.170.130.32",
+    "location": "INFOR-B1-FLG",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0034",
+    "ip": "10.170.130.34",
+    "location": "INFOR-B1-FLG",
+    "type": "HP LaserJet E50145",
+    "details": "HP LaserJet E50145",
+    "id": "a83a468d-df0e-434c-83fe-57ae4d55d002",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0036",
+    "ip": "10.170.130.36",
+    "location": "PHAMA-OPD-PED",
+    "type": "PRINTSERVER",
+    "details": "Web Image Monitor",
+    "id": "4c10aa10-8467-4404-87c2-b5f9c0fa0aff",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "d3281e22-628c-4a2f-9f63-956978c5ba16",
+    "name": "INFOR-B2-FLG-LABEL",
+    "ip": "10.170.130.37",
+    "location": "INFOR-B2-FLG",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "7a772447-96b5-4ce1-bf3f-2406b9f3eed3",
+    "name": "CADIO LABEL",
+    "ip": "10.170.130.39",
+    "location": "CADIO",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "700ed0b8-2fab-426b-aef4-06898d181337",
+    "name": "WARD9 LABEL",
+    "ip": "10.170.130.40",
+    "location": "WARD9",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "2ef56f36-425e-49b0-9a05-b8f0818f63c3",
+    "name": "WARD8_LABEL",
+    "ip": "10.170.130.41",
+    "location": "WARD8_BD1",
+    "type": "TSC-TE210",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "8736b503-6361-43f7-8634-067f5279e931",
+    "name": "RICOH IM 550",
+    "ip": "10.170.130.42",
+    "location": "ICU",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "03c25d78-73c4-492e-be54-637169960b53",
+    "name": "RICOH IM 550",
+    "ip": "10.170.130.43",
+    "location": "MED",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "89e5fdaa-f0f7-4d4b-9b80-2d5e76bc8b89",
+    "name": "MED LABEL",
+    "ip": "10.170.130.44",
+    "location": "MED",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "8f263083-9072-4b28-ac9c-621c5a0cc16a",
+    "name": "RICOH IM550",
+    "ip": "10.170.130.45",
+    "location": "PED",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "e53db084-719e-451d-ab1e-7eb57fbc53b4",
+    "name": "PED LABEL",
+    "ip": "10.170.130.46",
+    "location": "PED",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "05518f31-88c5-4301-82c7-75e74b7fde5a",
+    "name": "ER LABEL",
+    "ip": "10.170.130.47",
+    "location": "ER",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "HP LaserJet E50145",
+    "ip": "10.170.130.48",
+    "location": "ER",
+    "type": "HP LaserJet E50145",
+    "details": "HP LaserJet E50145",
+    "id": "68b2dd72-3657-43f9-adcd-3a625fcd815d",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "c04c743e-1522-4611-84be-ac747c362fd0",
+    "name": "WARD6 LABEL",
+    "ip": "10.170.130.49",
+    "location": "WARD6",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "767a1f5c-f618-4bba-a1fd-6df38df394e3",
+    "name": "KKR-PRN0050",
+    "ip": "10.170.130.50",
+    "location": "HD",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "eaef63ac-1789-4796-bf34-f916ab56d374",
+    "name": "HD LABEL",
+    "ip": "10.170.130.51",
+    "location": "HD",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "b89c1eb0-2c56-49da-9f2a-ca4e29f07897",
+    "name": "RICOH IM 550",
+    "ip": "10.170.130.52",
+    "location": "EYE",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "7bfc20d8-5dff-4ebd-b3f8-0d15d90a632b",
+    "name": "WARD7 LABEL",
+    "ip": "10.170.130.54",
+    "location": "WARD7",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0055",
+    "ip": "10.170.130.55",
+    "location": "CADIO",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG M3820ND",
+    "id": "e12e3919-c0b7-448d-b407-7d5f5934b329",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0058",
+    "ip": "10.170.130.58",
+    "location": "PHAMA_OPD Reg",
+    "type": "PRINTSERVER",
+    "details": "Zero One Technology",
+    "id": "7a48ffb6-0834-4838-91d8-2c5e00be07f2",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0059",
+    "ip": "10.170.130.59",
+    "location": "PHAMA_OPD Reg",
+    "type": "PRINTSERVER",
+    "details": "Zero One Technology",
+    "id": "07ec70df-6ed2-45c9-9824-bc5aa0d025ee",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0060",
+    "ip": "10.170.130.60",
+    "location": "XRAY_G",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG SL-M3820ND",
+    "id": "88dee5a2-f30c-4a66-8dbe-c44b4e22e305",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0061",
+    "ip": "10.170.130.61",
+    "location": "PAY OPD G",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG SL-M3820ND",
+    "id": "3bd4e89c-3670-4ffc-9ad2-c62f22cc55de",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0062",
+    "ip": "10.170.130.62",
+    "location": "ACCOUNT",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG SL-M3820ND",
+    "id": "a1639c23-4c29-4c7d-b879-9834f18f3e08",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0064",
+    "ip": "10.170.130.64",
+    "location": "ENDO",
+    "type": "HP Color LaserJet Pro 4203",
+    "details": "HP Color LaserJet Pro 4203",
+    "id": "7d201f78-c259-4419-b864-25ae5836a440",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0065",
+    "ip": "10.170.130.65",
+    "location": "LAB",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG SL-M3820ND",
+    "id": "17409f77-f877-4f58-a307-acb272a596f7",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "86b5af38-baf1-4981-9edd-fbb0ec6327a4",
+    "name": "LAB LABEL",
+    "ip": "10.170.130.66",
+    "location": "LAB",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "10c4a143-b321-49d5-8435-1af64962dd2e",
+    "name": "HP LaserJet MFP E52645",
+    "ip": "10.170.130.67",
+    "location": "WARD7_BD1",
+    "type": "HP LaserJet MFP E52645",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0068",
+    "ip": "10.170.130.68",
+    "location": "WELLBABY",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG SL-M3820ND",
+    "id": "5532c36f-72e1-4913-b6f4-5c8cf69fc72c",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "0b785587-36cc-4f59-b918-557f6fd07e7c",
+    "name": "WELLBABY LABEL",
+    "ip": "10.170.130.69",
+    "location": "WELLBABY",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "008e572b-343c-4abb-b972-dd7ba6ecfc55",
+    "name": "HP LaserJet MFP E52645",
+    "ip": "10.170.130.70",
+    "location": "WARD6_BD1",
+    "type": "HP LaserJet MFP E52645",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0071",
+    "ip": "10.170.130.71",
+    "location": "BEAUTY",
+    "type": "HP LaserJet MFP E52645",
+    "details": "HP LaserJet MFP E52645",
+    "id": "ac59fa58-4e7f-4c6c-be8d-3b47d6f93e06",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "393da941-a325-4490-94e1-297d983ad757",
+    "name": "KKR-PRN0072",
+    "ip": "10.170.130.72",
+    "location": "CHECKUP",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "31668a68-136f-4fb3-a5d2-2f6e2560b310",
+    "name": "RICOH IM 550",
+    "ip": "10.170.130.74",
+    "location": "ORTHO",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0075",
+    "ip": "10.170.130.75",
+    "location": "SURG",
+    "type": "HP LaserJet E50145",
+    "details": "HP LaserJet E50145",
+    "id": "aa634c59-9107-47dc-9518-9e289998fa13",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "01ce9141-5c18-4bbc-aabb-56fc31e87608",
+    "name": "KKR-PRN0076",
+    "ip": "10.170.130.76",
+    "location": "WARD6",
+    "type": "SAMSUNG SL-M4070FR",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "03e9d7c6-b3c8-41a9-a60f-22264426ccde",
+    "name": "COM HP",
+    "ip": "10.170.130.77",
+    "location": "COM-Dept",
+    "type": "HP LaserJet MFP E52645",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0078",
+    "ip": "10.170.130.78",
+    "location": "QC",
+    "type": "CANON PRINTER",
+    "details": "HP LaserJet M402n",
+    "id": "7e458cf0-4677-4aa6-b7a8-bd841e68e301",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "25ecfd83-628d-406a-abad-767e414ce661",
+    "name": "KKR-PRN0079",
+    "ip": "10.170.130.79",
+    "location": "QC",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "c2197b2b-8f36-4b32-8680-6471d54d7875",
+    "name": "DT039-50",
+    "ip": "10.170.130.80",
+    "location": "ADMISSION",
+    "type": "TSC-Wristband",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "b50d2ee8-8189-4864-a29d-f4366ee548a8",
+    "name": "DT039-50",
+    "ip": "10.170.130.81",
+    "location": "ADMISSION",
+    "type": "TSC-Wristband",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "7a4165dc-b8c3-4685-a298-28c023db8802",
+    "name": "HP LaserJet MFP E52645",
+    "ip": "10.170.130.82",
+    "location": "WARD8_BD1",
+    "type": "HP LaserJet MFP E52645",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "2d491e26-a50a-4c3b-b0c1-0d4047dc6ff3",
+    "name": "OR_LABEL",
+    "ip": "10.170.130.83",
+    "location": "OR",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "d556c602-ec2b-40e4-a8e6-0acd35a26748",
+    "name": "EYE_LABEL",
+    "ip": "10.170.130.85",
+    "location": "EYE",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "88e285d5-a32e-4338-a31b-fd06c90e7a69",
+    "name": "EYE_Wristband",
+    "ip": "10.170.130.87",
+    "location": "EYE",
+    "type": "TSC-Wristband",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0090",
+    "ip": "10.170.130.90",
+    "location": "MARKETTING",
+    "type": "PRINTSERVER",
+    "details": "Zero One Technology",
+    "id": "292e358f-46a4-413a-b7ba-856418eef81d",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "bd0c43fd-e4a7-412b-96bf-241a8d547b60",
+    "name": "COM EPSON",
+    "ip": "10.170.130.92",
+    "location": "COM-Dept",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0093",
+    "ip": "10.170.130.93",
+    "location": "PHAMA IPD Reg",
+    "type": "PRINTSERVER",
+    "details": "Zero One Technology",
+    "id": "06cf960a-79de-410a-9008-58647fef9f68",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "c282c990-f225-443b-9162-6d623a22497d",
+    "name": "RICOH IM 550",
+    "ip": "10.170.130.94",
+    "location": "DENT",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "909d3e9d-678d-41b0-9677-ea37e658dccc",
+    "name": "KKR-PRN0095",
+    "ip": "10.170.130.95",
+    "location": "OBG",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0096",
+    "ip": "10.170.130.96",
+    "location": "ACCOUNT",
+    "type": "PRINTSERVER",
+    "details": "Web Image Monitor",
+    "id": "7f915b3e-c4e0-4590-9c41-bad85c8ac5dc",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0098",
+    "ip": "10.170.130.98",
+    "location": "X-Ray Fl2",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG SL-M3820ND",
+    "id": "a83ec54c-b4d9-428d-adfc-1f0177de148e",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0099",
+    "ip": "10.170.130.99",
+    "location": "STATISTICS",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG SL-M3820ND",
+    "id": "a0b7dbef-7aa9-45d3-8f24-e96529134043",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "Aficio MP 201",
+    "ip": "10.170.130.101",
+    "location": "CheckUp_VIP",
+    "type": "RICOH MP201SPF",
+    "details": "Ricoh MP201SPF",
+    "id": "9921f99f-aa1d-4e6c-a53a-268122a60c80",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0102",
+    "ip": "10.170.130.102",
+    "location": "Lab_VIP",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG SL-M3820ND",
+    "id": "eb0ecc25-f375-4354-8353-ce61919262e0",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "e932a220-5e5e-4bc6-b74a-469b5396688f",
+    "name": "Account HP",
+    "ip": "10.170.130.103",
+    "location": "ACCOUNT",
+    "type": "HP LaserJet E50145",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "482ab1c0-65bd-463d-83af-93397ffa6d80",
+    "name": "ACCOUNT-23",
+    "ip": "10.170.130.104",
+    "location": "ACCOUNT",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "095026e9-e8e1-4278-bfaa-5f65ced571db",
+    "name": "ACCOUNT-25_LQ-2090IIN",
+    "ip": "10.170.130.105",
+    "location": "ACCOUNT",
+    "type": "LQ-2090IIN",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0107",
+    "ip": "10.170.130.107",
+    "location": "ACCOUNT",
+    "type": "PRINTSERVER",
+    "details": "Web Image Monitor",
+    "id": "496450d8-cc06-4223-8891-00b15721d507",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "41dfbbc9-25ff-43d7-87e8-b9defde46e12",
+    "name": "ACCOUNT-26",
+    "ip": "10.170.130.108",
+    "location": "ACCOUNT",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "308f90a9-2137-4837-a455-e6dbf0d9253e",
+    "name": "BEAUTY Guide",
+    "ip": "10.170.130.109",
+    "location": "BEAUTY",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "7cee91bb-b994-48cd-84f2-0aced6b46df3",
+    "name": "DENT Guide",
+    "ip": "10.170.130.110",
+    "location": "DENT",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "cd3682e0-288b-4a41-b0f5-bb507a8b06c0",
+    "name": "OBG Guide",
+    "ip": "10.170.130.111",
+    "location": "OBG",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "507cb2df-ea56-40c0-9262-75db81bb6b1c",
+    "name": "SURG Guide",
+    "ip": "10.170.130.112",
+    "location": "SURG",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "104f7214-859d-4861-a5aa-4d8059138cab",
+    "name": "ORTHO Guide",
+    "ip": "10.170.130.113",
+    "location": "ORTHO",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "d84be61f-084b-483b-a1ad-47c35957a3df",
+    "name": "MED Guide",
+    "ip": "10.170.130.114",
+    "location": "MED",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "237ef679-489d-4bec-b747-0888204fbb81",
+    "name": "PAY OPD Ped 1",
+    "ip": "10.170.130.115",
+    "location": "PAY OPD Ped",
+    "type": "SAMSUNG M3820ND",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "2cf0975b-677b-4a92-9b0e-ce593e8dbb7d",
+    "name": "PAY OPD Ped 2",
+    "ip": "10.170.130.116",
+    "location": "PAY OPD Ped",
+    "type": "SAMSUNG M3820ND",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "0f679e6c-8c43-4197-b667-f39fa4ae4227",
+    "name": "SAMSUNG M3820ND",
+    "ip": "10.170.130.117",
+    "location": "HRM",
+    "type": "SAMSUNG M3820ND",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "1da84fc3-e518-4f8a-829f-03c69f3b73d2",
+    "name": "RICOH IM 550",
+    "ip": "10.170.130.118",
+    "location": "STOCK",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "2e4261e6-d757-4b17-9118-fa8d5bbbc1a1",
+    "name": "HP Color M252dw",
+    "ip": "10.170.130.119",
+    "location": "STOCK",
+    "type": "HP Color M252dw",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "71e9a1ce-8a0b-48a0-a6ee-23c8d6270e97",
+    "name": "PED Guide",
+    "ip": "10.170.130.120",
+    "location": "PED",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0121",
+    "ip": "10.170.130.121",
+    "location": "XRAY-MRI",
+    "type": "Canon LBP6650",
+    "details": "Canon LBP6650",
+    "id": "f06ffa14-f50b-4abe-bc9b-337133a485d3",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "f5d2cd2a-52de-43db-85e6-47aefe63bb24",
+    "name": "KKR-PRN0121",
+    "ip": "172.16.1.52",
+    "location": "B.I.D",
+    "type": "HP LaserJet CP1525N",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "8aac63ab-d655-4871-a801-c23a450ee527",
+    "name": "KKR-PRN0122",
+    "ip": "172.16.1.51",
+    "location": "B.I.D",
+    "type": "HP LaserJet E50145",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "ba9915cf-8a8b-4cae-a719-789c75274c28",
+    "name": "BEAUTY-COUNTER",
+    "ip": "10.170.130.123",
+    "location": "BEAUTY",
+    "type": "HP LaserJet E50145",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0125",
+    "ip": "10.170.130.125",
+    "location": "MediaStudio",
+    "type": "HP M750",
+    "details": "HP M750",
+    "id": "310b9dda-def4-4069-9270-d290f40d83b3",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0126",
+    "ip": "10.170.130.126",
+    "location": "MediaStudio",
+    "type": "PRINTSERVER",
+    "details": "PrintServer",
+    "id": "1576ba87-90ce-4a6d-8f3a-47683a38b63d",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "83bcbe3f-fae8-4d9f-9363-ffdac28906b4",
+    "name": "HRD-Epson",
+    "ip": "10.170.130.127",
+    "location": "HRM",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "cccab825-0b8e-44fe-8391-cd3f6512d28c",
+    "name": "RICOH IM 550",
+    "ip": "10.170.130.128",
+    "location": "ER",
+    "type": "RICOH IM 550",
+    "note": "หมดประกัน 31/7/2026",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "f59e331d-10e2-4e54-b0a8-9ee13580029b",
+    "name": "Com - Label",
+    "ip": "10.170.130.129",
+    "location": "COM-Dept",
+    "type": "TTP-247",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "013c1daf-c2b8-404f-ae74-c2f1d60325fa",
+    "name": "KKR-PRN0130",
+    "ip": "10.170.130.130",
+    "location": "PT",
+    "type": "HP LaserJet MFP E52645",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0131",
+    "ip": "10.170.130.131",
+    "location": "MEAL SERVICE",
+    "type": "HP LaserJet MFP E52645",
+    "details": "HP LaserJet MFP E52645",
+    "id": "f55a5c62-4082-47a1-9ff9-76c94329f85c",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0132",
+    "ip": "10.170.130.132",
+    "location": "NS",
+    "type": "SAMSUNG M3820ND",
+    "details": "SAMSUNG M3820ND",
+    "id": "14f39060-8279-4dd3-a4a4-65ee0535ecd5",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "cb661963-b7c9-41cc-a3cc-accc9d9af4a8",
+    "name": "KKR-PRN0133",
+    "ip": "10.170.130.133",
+    "location": "CHECKUP",
+    "type": "SAMSUNG M3820ND",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "82d27a2e-d928-48ad-9b53-216a96161d2b",
+    "name": "CK-Label",
+    "ip": "10.170.130.135",
+    "location": "CHECKUP",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0136",
+    "ip": "10.170.130.136",
+    "location": "OR",
+    "type": "HP LaserJet MFP E52645",
+    "details": "HP LaserJet MFP E52645",
+    "id": "d71d2500-c8b2-4a31-b67a-d5867aca2d01",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0137",
+    "ip": "10.170.130.137",
+    "location": "HouseKeeping",
+    "type": "HP LaserJet Pro MFP M428fdn",
+    "details": "HP LaserJet Pro MFP M428fdn",
+    "id": "cd471688-9d3f-41de-ab28-f3fd2cd885f0",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "40bfc8d8-7d32-4f3c-abb0-293ea139ec5f",
+    "name": "HP LaserJet E50145",
+    "ip": "10.170.130.138",
+    "location": "MED",
+    "type": "HP LaserJet E50145",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "8c4424b9-499e-4f2f-8910-3eb97a07a587",
+    "name": "KKR-PRN0139",
+    "ip": "10.170.130.139",
+    "location": "B.I.D",
+    "type": "HP-1525",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "e2fd3980-9dfe-442c-bcbc-14b36fae8731",
+    "name": "EPSON-L805",
+    "ip": "10.170.130.140",
+    "location": "MediaStudio",
+    "type": "EPSON-L805",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0142",
+    "ip": "10.170.130.142",
+    "location": "UR",
+    "type": "HP LaserJet MFP E52645",
+    "details": "HP LaserJet MFP E52645",
+    "id": "1ddb4ca6-41ec-4a17-96c4-113e8ba44393",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "2dc69518-54dd-49bf-af61-a89004e4a6e1",
+    "name": "KKR-PRN0143",
+    "ip": "10.170.130.143",
+    "location": "WARD8 ISOLATION",
+    "type": "SAMSUNG SL-M4070FR",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "1fdaa3c6-eaed-4a80-8647-033c5fe17ff0",
+    "name": "SAMSUNG M3820ND",
+    "ip": "10.170.130.144",
+    "location": "COM-Dept",
+    "type": "SAMSUNG M3820ND",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "b0231259-f55a-48bd-8be0-c1c5aad4c93f",
+    "name": "Admit-1",
+    "ip": "10.170.130.145",
+    "location": "ADMISSION",
+    "type": "TSC-Wristband",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "50d7631d-ee9a-453f-a6df-8cef44be6b0e",
+    "name": "TSC-Wristband",
+    "ip": "10.170.130.146",
+    "location": "ADMISSION",
+    "type": "TSC-Wristband",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "47d93e5f-9b4c-41ae-be3e-bce9f63d421c",
+    "name": "TSC-Wristband",
+    "ip": "10.170.130.147",
+    "location": "ADMISSION",
+    "type": "TSC-Wristband",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "4ad4eb17-e0a1-4c7d-a0d3-b30898e912f7",
+    "name": "TSC-Wristband",
+    "ip": "10.170.130.148",
+    "location": "ADMISSION",
+    "type": "TSC-Wristband",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "41e7efee-63af-48bf-98f8-5a273be4fa6a",
+    "name": "HP LaserJet MFP E52645",
+    "ip": "10.170.130.149",
+    "location": "MED-FL2",
+    "type": "HP LaserJet MFP E52645",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "6eb19259-e700-4446-a9d8-9715b5958c20",
+    "name": "KKR-PRN0150",
+    "ip": "10.170.130.150",
+    "location": "MED-FL2",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "ab07a72e-b732-4f17-85ad-5bd9fe1d32dc",
+    "name": "KKR-PRN0151",
+    "ip": "10.170.130.151",
+    "location": "MED-FL2",
+    "type": "PRINTSERVER",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "fcf53ae5-8dbe-45fb-96c2-f5b8854a69c8",
+    "name": "KKR-PRN0152",
+    "ip": "10.170.130.152",
+    "location": "EMR",
+    "type": "SAMSUNG M3820ND",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "c191b5cf-4fbf-4d9e-9a8b-eb77f33d1204",
+    "name": "ADMISSION",
+    "ip": "10.170.130.153",
+    "location": "ADMISSION",
+    "type": "HP LaserJet MFP E52645",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "240d5d76-afdf-4cd5-868b-496f67cefc3c",
+    "name": "EPSON-L805",
+    "ip": "10.170.130.154",
+    "location": "HRM",
+    "type": "EPSON-L805",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "fee585cf-2cdc-4273-83da-9a546a3e06d6",
+    "name": "TSC-Wristband",
+    "ip": "10.170.130.155",
+    "location": "ADMISSION",
+    "type": "TSC-Wristband",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "625d7bf4-c768-401c-b197-6361cde1bfae",
+    "name": "HP LaserJet MFP E52645",
+    "ip": "10.170.130.156",
+    "location": "RTX",
+    "type": "HP LaserJet MFP E52645",
+    "note": "",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0157",
+    "ip": "10.170.130.157",
+    "location": "PT-Sport",
+    "type": "HP LaserJet MFP E52645",
+    "details": "HP LaserJet MFP E52645",
+    "id": "327bf2f4-ee82-4402-b5c4-3f9996518e0e",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "id": "56abd83b-8066-4f67-8a98-d2a134eec6de",
+    "name": "Xray_Guide",
+    "ip": "10.170.130.158",
+    "location": "XRAY_G",
+    "type": "TSC-TE210",
+    "note": "",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0159",
+    "ip": "10.170.130.159",
+    "location": "UR",
+    "type": "HP LaserJet MFP E52645",
+    "details": "HP LaserJet MFP E52645",
+    "id": "f98d28e2-d2fb-4c92-b897-9d549a45730d",
+    "status": "online",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0161",
+    "ip": "10.170.130.161",
+    "location": "PHA-FL2",
+    "type": "HP Colour Laser 150nw",
+    "details": "HP Colour Laser 150nw",
+    "id": "4e13a070-5d59-4c53-8dfc-dcf146010fb3",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  },
+  {
+    "name": "KKR-PRN0162",
+    "ip": "10.170.130.162",
+    "location": "Inter",
+    "type": "HP LaserJet MFP E52645",
+    "details": "HP LaserJet MFP E52645",
+    "id": "56e78717-ed25-4288-a877-b07a1631be16",
+    "status": "offline",
+    "lastUpdated": "11/07/2026 10:58"
+  }
+];
+
+  function normalizePrinterRecord(p = {}) {
+    return {
+      id: p.id || generateId(),
+      name: p.name || '',
+      ip: p.ip || '',
+      location: p.location || '',
+      type: p.type || '',
+      status: p.status || 'unknown',
+      lastUpdated: p.lastUpdated || getTimestamp(),
+      note: p.note || p.details || ''
+    };
+  }
+
+  const initialPrintersData = rawInitialData.map(normalizePrinterRecord);
+
+  // --- State Variables ---
+  const storageKey = 'enterprisePrintersDB';
+  const dataVersionKey = 'enterprisePrintersDataVersion';
+  const currentDataVersion = '2026-08-11-no-mac-v2';
+  const templateAppScriptUrl = document.documentElement.dataset.appScriptUrl;
+  const appsScriptUrl = templateAppScriptUrl && templateAppScriptUrl.startsWith('https://script.google.com/macros/s/')
+    ? templateAppScriptUrl
+    : '';
+  let sheetSyncTimer = null;
+  let sheetWritePromise = Promise.resolve();
+  let sheetRefreshPromise = null;
+  let deferredSheetRefresh = false;
+  const backupStorageKey = 'enterprisePrintersDB_Backup';
+  let printers = [];
+  let filteredPrinters = [];
+  let currentSort = { key: 'ip', direction: 'asc' };
+  let currentPage = 1;
+  let compactRowsPerPage = 5;
+  let compactLayoutFrame = null;
+  let editingId = null;
+  let selectedIds = new Set();
+
+  // --- DOM Elements ---
+  const form = document.getElementById('printer-form');
+  const tableBody = document.getElementById('table-body');
+  const searchInput = document.getElementById('search-input');
+  const filterLoc = document.getElementById('filter-location');
+  const filterType = document.getElementById('filter-type');
+  const filterStatus = document.getElementById('filter-status');
+  const selectAllCb = document.getElementById('select-all-cb');
+  const bulkActionBar = document.getElementById('bulk-action-bar');
+  const selectedCountText = document.getElementById('selected-count-text');
+  const rowsPerPageSelect = document.getElementById('rows-per-page');
+  const resetFiltersBtn = document.getElementById('reset-filters-btn');
+  
+  // --- Core Functions ---
+  
+  function loadData() {
+    const saved = localStorage.getItem(storageKey);
+    let savedPrinters = null;
+
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) savedPrinters = parsed;
+      } catch (error) {
+        console.warn('Local printer data is invalid; restoring the bundled dataset.', error);
+      }
+    }
+
+    printers = (savedPrinters || initialPrintersData).map(normalizePrinterRecord);
+    localStorage.setItem(storageKey, JSON.stringify(printers));
+    localStorage.setItem(dataVersionKey, currentDataVersion);
+    updateDashboardStats();
+    updateFilterOptions();
+    applyFilters();
+    refreshPrintersFromSheet({ reason: 'startup' });
+  }
+
+  function setSheetSyncStatus(status) {
+    document.documentElement.dataset.sheetSync = status;
+    document.body.dataset.sheetSync = status;
+  }
+
+  async function performSheetSync(action = 'syncPrinters') {
+    setSheetSyncStatus('pending');
+    const payload = { action, source: 'Printer Management Pro', updatedAt: new Date().toISOString(), printers };
+    try {
+      if (window.google?.script?.run) {
+        await new Promise((resolve, reject) => {
+          google.script.run
+            .withSuccessHandler(result => result?.ok ? resolve(result) : reject(new Error(result?.error || 'บันทึกลงชีตไม่สำเร็จ')))
+            .withFailureHandler(reject)
+            .savePrintersToSheet(payload);
+        });
+      } else if (appsScriptUrl) {
+        await fetch(appsScriptUrl, {
+          method: 'POST', mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload), keepalive: true
+        });
+      } else {
+        throw new Error('ไม่พบ Apps Script URL สำหรับบันทึกข้อมูล');
+      }
+      setSheetSyncStatus('synced');
+    } catch (error) {
+      setSheetSyncStatus('error');
+      console.warn('Google Sheets sync failed; local data remains available.', error);
+      throw error;
+    }
+  }
+
+  function syncSheetNow(action = 'syncPrinters') {
+    clearTimeout(sheetSyncTimer);
+    const write = performSheetSync(action);
+    sheetWritePromise = write.catch(() => {});
+    return write;
+  }
+
+  function queueSheetSync() {
+    clearTimeout(sheetSyncTimer);
+    sheetWritePromise = new Promise(resolve => {
+      sheetSyncTimer = setTimeout(() => performSheetSync().then(resolve, resolve), 400);
+    });
+  }
+
+  function hasUnsavedPrinterForm() {
+    if (editingId) return true;
+    return Array.from(form.elements).some(element =>
+      element.type !== 'hidden' && element.tagName !== 'BUTTON' && String(element.value || '').trim()
+    );
+  }
+
+  function applySheetSnapshot(result) {
+    if (!result?.ok || !Array.isArray(result.printers)) throw new Error(result?.error || 'ข้อมูลจากชีตไม่ถูกต้อง');
+    printers = result.printers.map(normalizePrinterRecord);
+    localStorage.setItem(storageKey, JSON.stringify(printers));
+    localStorage.setItem(dataVersionKey, currentDataVersion);
+    selectedIds.clear();
+    currentPage = 1;
+    updateDashboardStats();
+    updateFilterOptions();
+    applyFilters();
+    setSheetSyncStatus('synced');
+  }
+
+  function refreshPrintersFromSheet({ reason = 'manual' } = {}) {
+    if (hasUnsavedPrinterForm()) {
+      deferredSheetRefresh = true;
+      return Promise.resolve({ ok: false, deferred: true, reason });
+    }
+    if (sheetRefreshPromise) return sheetRefreshPromise;
+    if (!window.google?.script?.run) {
+      setSheetSyncStatus('local');
+      return Promise.resolve({ ok: false, local: true, reason });
+    }
+
+    sheetRefreshPromise = (async () => {
+      await sheetWritePromise;
+      setSheetSyncStatus('pending');
+      const result = await new Promise((resolve, reject) => {
+        google.script.run
+          .withSuccessHandler(resolve)
+          .withFailureHandler(reject)
+          .getPrintersFromSheet();
+      });
+      applySheetSnapshot(result);
+      return result;
+    })().catch(error => {
+      setSheetSyncStatus('error');
+      console.warn('Google Sheets refresh failed; local data remains available.', error);
+      return { ok: false, error: error?.message || String(error) };
+    }).finally(() => {
+      sheetRefreshPromise = null;
+    });
+    return sheetRefreshPromise;
+  }
+
+  function flushDeferredSheetRefresh() {
+    if (!deferredSheetRefresh || hasUnsavedPrinterForm()) return;
+    deferredSheetRefresh = false;
+    refreshPrintersFromSheet({ reason: 'form-complete' });
+  }
+
+  function saveData({ syncSheet = true } = {}) {
+    localStorage.setItem(storageKey, JSON.stringify(printers));
+    updateDashboardStats();
+    if (syncSheet) queueSheetSync();
+  }
+
+  function updateDashboardStats() {
+    document.getElementById('stat-total').textContent = printers.length;
+    document.getElementById('stat-offline').textContent = printers.filter(p => p.status === 'offline').length;
+  }
+
+  function updateFilterOptions() {
+    const locations = [...new Set(printers.map(p => p.location).filter(Boolean))].sort();
+    const types = [...new Set(printers.map(p => p.type).filter(Boolean))].sort();
+
+    document.getElementById('location-list').innerHTML = locations.map(l => `<option value="${l}">`).join('');
+    document.getElementById('type-list').innerHTML = types.map(t => `<option value="${t}">`).join('');
+
+    const currLoc = filterLoc.value;
+    const currType = filterType.value;
+    
+    filterLoc.innerHTML = `<option value="">-- ทุกสถานที่ --</option>` + locations.map(l => `<option value="${l}">${l}</option>`).join('');
+    filterType.innerHTML = `<option value="">-- ทุกรุ่น --</option>` + types.map(t => `<option value="${t}">${t}</option>`).join('');
+    
+    if(locations.includes(currLoc)) filterLoc.value = currLoc;
+    if(types.includes(currType)) filterType.value = currType;
+  }
+
+  function renderTable(dataToRender) {
+    const fragment = document.createDocumentFragment();
+    tableBody.innerHTML = ''; 
+    
+    if (dataToRender.length === 0) {
+      tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding: 30px; color:#7f8c8d;">ไม่พบข้อมูล</td></tr>`;
+      updateBulkActionBar();
+      return;
+    }
+
+    dataToRender.forEach(p => {
+      const tr = document.createElement('tr');
+      const isSelected = selectedIds.has(p.id);
+
+      let statusHtml = '';
+      if (p.status === 'online') statusHtml = '<span class="status-badge status-online">Online</span>';
+      else if (p.status === 'offline') statusHtml = '<span class="status-badge status-offline">Offline</span>';
+      else statusHtml = '<span class="status-badge status-warning">Unknown</span>';
+
+      tr.innerHTML = `
+        <td style="text-align: center;"><input type="checkbox" class="row-checkbox" data-id="${p.id}" ${isSelected ? 'checked' : ''}></td>
+        <td>
+          <a href="http://${p.ip}" target="_blank" class="printer-link" title="เปิดหน้าจัดการ (Web UI)" style="font-weight: 600;">
+            ${p.name} <span class="icon">🌐</span>
+          </a>
+          <span class="mobile-status-inline">${statusHtml}</span><span class="mobile-ip-inline">IP: ${p.ip}</span><span class="mobile-device-meta">${p.location} · ${p.type}</span>${p.note ? `<span class="mobile-note-inline">${p.note}</span>` : ''}<span class="timestamp">แก้ไข: ${p.lastUpdated || '-'}</span>
+        </td>
+        <td>
+          <div class="copyable" title="คลิกเพื่อคัดลอก IP">${p.ip}</div>
+        </td>
+        <td>${p.location}</td>
+        <td>${p.type}</td>
+        <td>${statusHtml}</td>
+        <td style="font-size: 0.9em; color: #555;">${p.note || '-'}</td>
+
+        <td style="text-align: center;">
+          <button class="btn btn-warning btn-sm edit-btn" data-id="${p.id}" title="แก้ไข" aria-label="แก้ไข ${p.name}">✏️</button>
+          <button class="btn btn-danger btn-sm delete-btn" data-id="${p.id}" title="ลบ" aria-label="ลบ ${p.name}">🗑️</button>
+        </td>
+      `;
+      fragment.appendChild(tr);
+    });
+    
+    tableBody.appendChild(fragment);
+    updateBulkActionBar();
+    
+    const allRowCheckboxes = document.querySelectorAll('.row-checkbox');
+    const allChecked = allRowCheckboxes.length > 0 && Array.from(allRowCheckboxes).every(cb => cb.checked);
+    selectAllCb.checked = allChecked;
+  }
+
+  function applyFilters() {
+    const term = searchInput.value.toLowerCase();
+    const loc = filterLoc.value;
+    const type = filterType.value;
+    const status = filterStatus.value;
+
+    filteredPrinters = printers.filter(p => {
+      const matchSearch = p.name.toLowerCase().includes(term) || p.ip.toLowerCase().includes(term) || p.location.toLowerCase().includes(term);
+      const matchLoc = loc === '' || p.location === loc;
+      const matchType = type === '' || p.type === type;
+      const matchStatus = status === '' || p.status === status;
+      return matchSearch && matchLoc && matchType && matchStatus;
+    });
+
+    filteredPrinters.sort((a, b) => {
+      let valA = a[currentSort.key] || '';
+      let valB = b[currentSort.key] || '';
+      
+      if (currentSort.key === 'ip') {
+         const numA = valA.split('.').map(n => +n+256).join('.');
+         const numB = valB.split('.').map(n => +n+256).join('.');
+         valA = numA; valB = numB;
+      }
+      
+      const dir = currentSort.direction === 'asc' ? 1 : -1;
+      return valA.localeCompare(valB, undefined, { numeric: true }) * dir;
+    });
+
+    document.querySelectorAll('.sortable-header').forEach(th => {
+      th.classList.remove('sorted-asc', 'sorted-desc');
+      if (th.dataset.sort === currentSort.key) th.classList.add(`sorted-${currentSort.direction}`);
+    });
+
+    renderPagination();
+  }
+
+  function calculateCompactRowsPerPage() {
+    const tableWrapper = document.querySelector('#mobile-list .table-wrapper');
+    if (!tableWrapper || tableWrapper.clientHeight <= 42) return compactRowsPerPage;
+    const rowHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--compact-row-height')) || 72;
+    return Math.max(1, Math.floor((tableWrapper.clientHeight - 42) / rowHeight));
+  }
+
+  function getActiveRowsPerPage() {
+    if (isCompactLayout()) return compactRowsPerPage;
+    const selected = rowsPerPageSelect.value;
+    if (selected === 'all') return Math.max(filteredPrinters.length, 1);
+    const parsed = Number.parseInt(selected, 10);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 15;
+  }
+
+  function scheduleCompactPagination() {
+    if (!isCompactLayout()) return;
+    cancelAnimationFrame(compactLayoutFrame);
+    compactLayoutFrame = requestAnimationFrame(() => {
+      const nextRowsPerPage = calculateCompactRowsPerPage();
+      if (nextRowsPerPage !== compactRowsPerPage) {
+        compactRowsPerPage = nextRowsPerPage;
+        applyFilters();
+      }
+    });
+  }
+
+  function renderPagination() {
+    const limitValue = isCompactLayout() ? 'adaptive' : rowsPerPageSelect.value;
+    const limit = getActiveRowsPerPage();
+    
+    const totalPages = Math.ceil(filteredPrinters.length / limit) || 1;
+    if (currentPage > totalPages) currentPage = totalPages;
+    
+    document.getElementById('page-info').textContent = `หน้า ${currentPage} / ${totalPages} (รวม ${filteredPrinters.length} รายการ)`;
+    
+    const isSinglePage = totalPages <= 1;
+    document.getElementById('first-page-btn').disabled = currentPage === 1 || isSinglePage;
+    document.getElementById('prev-page-btn').disabled = currentPage === 1 || isSinglePage;
+    document.getElementById('next-page-btn').disabled = currentPage === totalPages || isSinglePage;
+    document.getElementById('last-page-btn').disabled = currentPage === totalPages || isSinglePage;
+
+    const start = (currentPage - 1) * limit;
+    const paginatedData = limitValue === 'all' ? filteredPrinters : filteredPrinters.slice(start, start + limit);
+    renderTable(paginatedData);
+  }
+
+  function resetForm() {
+    form.reset();
+    document.getElementById('form-title').textContent = 'เพิ่มเครื่องพิมพ์ใหม่';
+    document.getElementById('submit-btn').textContent = 'บันทึกข้อมูล';
+    document.getElementById('cancel-edit-btn').style.display = 'none';
+    editingId = null;
+    flushDeferredSheetRefresh();
+  }
+
+  // --- Event Listeners ---
+
+  resetFiltersBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    filterLoc.value = '';
+    filterType.value = '';
+    filterStatus.value = '';
+    document.getElementById('clear-search-btn').style.display = 'none';
+    currentPage = 1;
+    applyFilters();
+  });
+
+  rowsPerPageSelect.addEventListener('change', () => { if (!isCompactLayout()) { currentPage = 1; applyFilters(); } });
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const id = document.getElementById('printer-id').value || generateId();
+    const ip = document.getElementById('printer-ip').value.trim();
+    
+    const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    if (!ipRegex.test(ip)) {
+        Swal.fire('รูปแบบ IP ไม่ถูกต้อง', 'กรุณาระบุ IP ให้ถูกต้อง (เช่น 192.168.1.100)', 'error');
+        return;
+    }
+
+    const duplicate = printers.find(p => p.ip === ip && p.id !== editingId);
+    if (duplicate) {
+        Swal.fire('IP ซ้ำซ้อน!', `IP ${ip} ถูกใช้งานแล้วโดยเครื่อง "${duplicate.name}"`, 'error');
+        return;
+    }
+
+    const newData = {
+      id: editingId || id,
+      name: document.getElementById('printer-name').value.trim(),
+      ip: ip,
+      location: document.getElementById('printer-location').value.trim(),
+      type: document.getElementById('printer-type').value.trim(),
+      note: document.getElementById('printer-note').value.trim(),
+      status: editingId ? printers.find(p => p.id === editingId).status : 'unknown',
+      lastUpdated: getTimestamp()
+    };
+
+    if (editingId) {
+      const index = printers.findIndex(p => p.id === editingId);
+      printers[index] = newData;
+      Swal.fire({ icon: 'success', title: 'อัปเดตข้อมูลสำเร็จ', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+    } else {
+      printers.push(newData);
+      Swal.fire({ icon: 'success', title: 'เพิ่มเครื่องพิมพ์สำเร็จ', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+    }
+
+    saveData(); updateFilterOptions(); applyFilters(); resetForm();
+  });
+
+  document.getElementById('cancel-edit-btn').addEventListener('click', resetForm);
+
+  tableBody.addEventListener('click', function(e) {
+    const target = e.target;
+    if (target.closest('.printer-link')) return;
+
+    if (target.classList.contains('copyable')) {
+      try {
+        const textToCopy = target.textContent;
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = textToCopy;
+        tempTextArea.style.position = 'fixed'; tempTextArea.style.top = '-9999px';
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempTextArea);
+        Swal.fire({ icon: 'success', title: 'คัดลอก IP: ' + textToCopy, toast: true, position: 'top-end', showConfirmButton: false, timer: 1000 });
+      } catch (err) {
+        Swal.fire('ผิดพลาด', 'Browser บล็อกการคัดลอก', 'error');
+      }
+      return;
+    }
+
+    if (target.classList.contains('row-checkbox')) {
+      const id = target.dataset.id;
+      if (target.checked) selectedIds.add(id); else selectedIds.delete(id);
+      updateBulkActionBar();
+      const allRowCheckboxes = document.querySelectorAll('.row-checkbox');
+      selectAllCb.checked = Array.from(allRowCheckboxes).every(cb => cb.checked);
+      return;
+    }
+
+    const btn = target.closest('button');
+    if (!btn) return;
+    const id = btn.dataset.id;
+
+    if (btn.classList.contains('delete-btn')) {
+      const pName = printers.find(p => p.id === id).name;
+      Swal.fire({
+          title: 'ยืนยันการลบ?',
+          text: `ต้องการลบปริ้นเตอร์ "${pName}" ใช่หรือไม่?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          confirmButtonText: 'ลบข้อมูล'
+      }).then((result) => {
+          if (result.isConfirmed) {
+              printers = printers.filter(p => p.id !== id);
+              selectedIds.delete(id);
+              saveData(); applyFilters();
+              Swal.fire({ icon: 'success', title: 'ลบข้อมูลแล้ว', toast: true, position: 'top-end', showConfirmButton: false, timer: 1000 });
+          }
+      });
+    } else if (btn.classList.contains('edit-btn')) {
+      const p = printers.find(p => p.id === id);
+      if (p) {
+        editingId = p.id;
+        document.getElementById('printer-id').value = p.id;
+        document.getElementById('printer-name').value = p.name;
+        document.getElementById('printer-ip').value = p.ip;
+        document.getElementById('printer-location').value = p.location;
+        document.getElementById('printer-type').value = p.type;
+        document.getElementById('printer-note').value = p.note || '';
+        
+        document.getElementById('form-title').textContent = 'แก้ไขข้อมูล (Edit Printer)';
+        document.getElementById('submit-btn').textContent = 'บันทึกการแก้ไข (Update)';
+        document.getElementById('cancel-edit-btn').style.display = 'block';
+        setMobileView('manage');
+      }
+    }
+  });
+
+  document.querySelectorAll('.sortable-header').forEach(th => {
+    th.addEventListener('click', () => {
+      const sortKey = th.dataset.sort;
+      if (currentSort.key === sortKey) { currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc'; } 
+      else { currentSort.key = sortKey; currentSort.direction = 'asc'; }
+      applyFilters();
+    });
+  });
+
+  const triggerFilter = () => { currentPage = 1; applyFilters(); };
+  searchInput.addEventListener('input', () => {
+    document.getElementById('clear-search-btn').style.display = searchInput.value ? 'block' : 'none';
+    triggerFilter();
+  });
+  document.getElementById('clear-search-btn').addEventListener('click', () => { searchInput.value = ''; triggerFilter(); document.getElementById('clear-search-btn').style.display = 'none'; });
+  filterLoc.addEventListener('change', triggerFilter);
+  filterType.addEventListener('change', triggerFilter);
+  filterStatus.addEventListener('change', triggerFilter);
+
+  document.getElementById('first-page-btn').addEventListener('click', () => { currentPage = 1; applyFilters(); });
+  document.getElementById('prev-page-btn').addEventListener('click', () => { if(currentPage > 1) { currentPage--; applyFilters(); }});
+  document.getElementById('next-page-btn').addEventListener('click', () => { currentPage++; applyFilters(); });
+  document.getElementById('last-page-btn').addEventListener('click', () => { 
+    const limit = getActiveRowsPerPage();
+    currentPage = Math.ceil(filteredPrinters.length / limit); 
+    applyFilters(); 
+  });
+
+  function updateBulkActionBar() {
+    if (selectedIds.size > 0) {
+      bulkActionBar.classList.add('active');
+      selectedCountText.textContent = `เลือกแล้ว ${selectedIds.size} รายการ`;
+    } else {
+      bulkActionBar.classList.remove('active');
+    }
+  }
+
+  selectAllCb.addEventListener('change', (e) => {
+    const checkboxes = document.querySelectorAll('.row-checkbox');
+    checkboxes.forEach(cb => {
+      cb.checked = e.target.checked;
+      if (e.target.checked) selectedIds.add(cb.dataset.id); else selectedIds.delete(cb.dataset.id);
+    });
+    updateBulkActionBar();
+  });
+
+  document.getElementById('bulk-delete-btn').addEventListener('click', () => {
+    Swal.fire({
+        title: 'ลบหลายรายการ?',
+        text: `ต้องการลบข้อมูล ${selectedIds.size} รายการใช่หรือไม่?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'ลบทั้งหมด'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            printers = printers.filter(p => !selectedIds.has(p.id));
+            selectedIds.clear(); selectAllCb.checked = false;
+            saveData(); updateFilterOptions(); applyFilters();
+            Swal.fire({ icon: 'success', title: 'ลบรายการที่เลือกแล้ว', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+        }
+    });
+  });
+
+  // --- Database Tools ---
+  document.getElementById('backup-btn').addEventListener('click', () => {
+    localStorage.setItem(backupStorageKey, JSON.stringify(printers));
+    Swal.fire({ icon: 'success', title: 'สร้าง Backup ในเบราว์เซอร์แล้ว', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+  });
+
+  document.getElementById('restore-btn').addEventListener('click', () => {
+    const backup = localStorage.getItem(backupStorageKey);
+    if (!backup) return Swal.fire('ไม่พบไฟล์ Backup', 'ไม่เคยมีการสร้างแบ็คอัพไว้ในเครื่องนี้', 'error');
+    Swal.fire({
+        title: 'ยืนยันกู้คืนข้อมูล?',
+        text: 'ข้อมูลปัจจุบันจะถูกเขียนทับด้วย Backup',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'กู้คืน'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            printers = JSON.parse(backup);
+            saveData(); updateFilterOptions(); applyFilters();
+            Swal.fire('สำเร็จ!', 'กู้คืนข้อมูลเรียบร้อย', 'success');
+        }
+    });
+  });
+
+  document.getElementById('sync-sheet-btn').addEventListener('click', async function() {
+    const originalText = this.textContent;
+    this.disabled = true;
+    this.textContent = 'กำลังบันทึก...';
+    try {
+      await syncSheetNow('saveToSheet');
+      Swal.fire({ icon: 'success', title: 'ส่งข้อมูลไปยังชีตแล้ว', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
+    } catch (error) {
+      Swal.fire('บันทึกไม่สำเร็จ', 'ไม่สามารถเชื่อมต่อ Google Sheets ได้ ข้อมูลยังเก็บอยู่ในเครื่อง', 'error');
+    } finally {
+      this.disabled = false;
+      this.textContent = originalText;
+    }
+  });
+
+  document.getElementById('export-csv-btn').addEventListener('click', () => {
+    let csv = "\uFEFFName,IP,Location,Type,Status,LastUpdated,Note\n";
+    printers.forEach(p => { csv += `"${p.name}","${p.ip}","${p.location}","${p.type}","${p.status}","${p.lastUpdated}","${p.note||''}"\n`; });
+    const a = document.createElement('a'); a.href = "data:text/csv;charset=utf-8," + encodeURIComponent(csv); 
+    a.download = getExportFilename('csv'); a.click();
+  });
+
+
+  // ==========================================
+  // CLOSED-LOOP MONITORING SYSTEM (TCP Scan Only)
+  // ==========================================
+
+  document.getElementById('copy-ping-script-btn').addEventListener('click', () => {
+    if (printers.length === 0) return Swal.fire('ไม่มีข้อมูล', 'คุณยังไม่มีรายการปริ้นเตอร์ให้สแกน', 'warning');
+
+    const ipList = printers.filter(p => /^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$/.test(p.ip)).map(p => `"${p.ip}"`).join(',');
+    if (!ipList) return Swal.fire('ข้อมูลไม่ถูกต้อง', 'ไม่พบ IP Address ที่ถูกต้องในระบบ', 'error');
+
+    // PowerShell Script: TCP Scan (9100, 80)
+    const psScript = `
+$ips = @(${ipList})
+$results = @()
+
+Write-Host "=========================================" -ForegroundColor Cyan
+Write-Host " Printer Network TCP Status Check" -ForegroundColor Cyan
+Write-Host " Bypassing ICMP (Ping) Block..." -ForegroundColor Yellow
+Write-Host "=========================================" -ForegroundColor Cyan
+
+foreach ($ip in $ips) {
+    $isOnline = $false
+    $ports = @(9100, 80)
+    
+    foreach ($port in $ports) {
+        try {
+            $tcp = New-Object System.Net.Sockets.TcpClient
+            $async = $tcp.BeginConnect($ip, $port, $null, $null)
+            $success = $async.AsyncWaitHandle.WaitOne(1000, $true)
+            
+            if ($success) {
+                try { $tcp.EndConnect($async) } catch { }
+                $isOnline = $true
+                $tcp.Close()
+                break
+            }
+            $tcp.Close()
+        } catch { }
+    }
+    
+    if ($isOnline) {
+        Write-Host "[ONLINE]  $ip (TCP Connected)" -ForegroundColor Green
+        $results += [PSCustomObject]@{ ip = $ip; status = 'online' }
+    } else {
+        Write-Host "[OFFLINE] $ip (Connection Refused/Timeout)" -ForegroundColor Red
+        $results += [PSCustomObject]@{ ip = $ip; status = 'offline' }
+    }
+}
+
+Write-Host "=========================================" -ForegroundColor Cyan
+Write-Host "Packing results to Clipboard..." -ForegroundColor Yellow
+$jsonResult = $results | ConvertTo-Json -Compress
+Set-Clipboard -Value $jsonResult
+Write-Host "Done! Return to the web dashboard and click 'Import'." -ForegroundColor Green
+`.trim();
+
+    // ท่า Hack Auto-Copy
+    let copySuccess = false;
+    try {
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = psScript;
+        tempTextArea.style.position = 'fixed'; 
+        tempTextArea.style.top = '-9999px';
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        copySuccess = document.execCommand('copy');
+        document.body.removeChild(tempTextArea);
+    } catch(e) {
+        copySuccess = false;
+    }
+
+    if (copySuccess) {
+        Swal.fire({
+            title: '1. คัดลอกคำสั่งแล้ว (Auto-Copy)!',
+            html: '<div style="text-align: left; font-size: 0.9em;">' +
+                  'ระบบคัดลอกสคริปต์ <b>TCP Scan (9100/80)</b> ให้แล้ว<br><br>' +
+                  'เอาสคริปต์ไปรันบน <b>Windows PowerShell</b><br>' +
+                  'แล้วกลับมากดปุ่ม <b>"2. อัปเดตสถานะ"</b> บนเว็บ' +
+                  '</div>',
+            icon: 'success'
+        });
+    } else {
+        // Fallback Modal แบบ Manual
+        Swal.fire({
+            title: 'สคริปต์สำหรับ PowerShell',
+            html: `
+                <div style="text-align: left; font-size: 0.9em; margin-bottom: 10px; color: #d35400;">
+                    ระบบจะเช็คสถานะผ่าน TCP Port 9100 และ 80<br><br>
+                    <b>วิธีใช้:</b> เนื่องจากเบราว์เซอร์บล็อกการคัดลอกอัตโนมัติ กรุณากด <b>Ctrl+C</b> เพื่อคัดลอกสคริปต์ด้านล่างนี้ด้วยตัวเอง แล้วนำไปรันใน PowerShell
+                </div>
+                <textarea id="ps-script-textarea" readonly style="width: 100%; height: 200px; font-family: monospace; font-size: 0.85em; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">${psScript}</textarea>
+            `,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'ลองคัดลอกให้อัตโนมัติอีกครั้ง',
+            cancelButtonText: 'ปิด',
+            didOpen: () => {
+                const textarea = document.getElementById('ps-script-textarea');
+                textarea.select();
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                try {
+                    const textarea = document.getElementById('ps-script-textarea');
+                    textarea.select();
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        Swal.fire('สำเร็จ', 'คัดลอกสคริปต์ลง Clipboard แล้ว เอาไปวางใน PowerShell ได้เลย', 'success');
+                    } else {
+                        Swal.fire('ถูกบล็อก!', 'Browser ของคุณบล็อกการคัดลอกอัตโนมัติ กรุณากดคัดลอกจากกล่องข้อความด้วยตัวเอง (Ctrl+C)', 'warning');
+                    }
+                } catch (err) {
+                    Swal.fire('ถูกบล็อก!', 'Browser ของคุณบล็อกการคัดลอกอัตโนมัติ กรุณากดคัดลอกจากกล่องข้อความด้วยตัวเอง (Ctrl+C)', 'warning');
+                }
+            }
+        });
+    }
+  });
+
+  document.getElementById('import-ping-results-btn').addEventListener('click', async () => {
+    try {
+        const clipboardText = await navigator.clipboard.readText();
+        
+        if (!clipboardText || !clipboardText.includes('"ip"') || !clipboardText.includes('"status"')) {
+            throw new Error("ไม่มีข้อมูล");
+        }
+
+        const pingResults = JSON.parse(clipboardText);
+        let updatedCount = 0;
+        const syncTimestamp = getTimestamp();
+
+        pingResults.forEach(res => {
+            const index = printers.findIndex(p => p.ip === res.ip);
+            if (index !== -1) {
+                printers[index].status = res.status;
+                printers[index].lastUpdated = syncTimestamp; 
+                updatedCount++;
+            }
+        });
+
+        saveData();
+        applyFilters();
+        Swal.fire('อัปเดตสำเร็จ!', `ดึงสถานะล่าสุดได้ ${updatedCount} เครื่อง`, 'success');
+
+    } catch (error) {
+        Swal.fire({
+            title: 'ไม่พบข้อมูลสถานะใน Clipboard',
+            text: 'กรุณารันคำสั่ง PowerShell ให้เสร็จสิ้นก่อน (ระบบ PowerShell จะคัดลอกผลลัพธ์ให้คุณเอง) แล้วค่อยมากดปุ่มนี้\nหรือ Browser ของคุณอาจบล็อกการอ่าน Clipboard',
+            icon: 'error'
+        });
+    }
+  });
+
+  // --- Mobile tab navigation ---
+  const mobileViewNames = ['manage', 'list'];
+  const legacyMobileViews = new Set(['form', 'tools', 'overview']);
+  const swipeControlSelector = 'input, select, textarea, button, a, [contenteditable="true"]';
+  const mobileTabs = Array.from(document.querySelectorAll('.mobile-tab'));
+  const mobileContainer = document.querySelector('.container');
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchStartTarget = null;
+  function isDesktopScreen() {
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    return viewportWidth >= 1025;
+  }
+
+  function isCompactLayout() {
+    return !isDesktopScreen();
+  }
+
+  function updateLayoutMode() {
+    document.body.dataset.layout = isDesktopScreen() ? 'desktop' : 'compact';
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    document.documentElement.style.setProperty('--app-height', `${viewportHeight}px`);
+    scheduleCompactPagination();
+  }
+
+  function setMobileView(view, { updateHash = true } = {}) {
+    if (legacyMobileViews.has(view)) view = 'manage';
+    if (!mobileViewNames.includes(view)) view = 'manage';
+    document.body.dataset.mobileView = view;
+    mobileTabs.forEach(tab => {
+      const isActive = tab.dataset.mobileView === view;
+      tab.setAttribute('aria-current', isActive ? 'page' : 'false');
+    });
+    if (updateHash) history.replaceState(null, '', `#mobile-${view}`);
+    if (view === 'list') scheduleCompactPagination();
+  }
+
+  mobileTabs.forEach(tab => {
+    tab.addEventListener('click', event => {
+      event.preventDefault();
+      setMobileView(tab.dataset.mobileView);
+    });
+  });
+
+  mobileContainer.addEventListener('touchstart', event => {
+    const targetElement = event.target instanceof Element ? event.target : null;
+    touchStartTarget = targetElement && !targetElement.closest(swipeControlSelector) ? targetElement : null;
+    if (!touchStartTarget) return;
+    const touch = event.changedTouches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+  }, { passive: true });
+
+  mobileContainer.addEventListener('touchend', event => {
+    if (!isCompactLayout() || !touchStartTarget) return;
+    const touch = event.changedTouches[0];
+    const deltaX = touch.clientX - touchStartX;
+    const deltaY = touch.clientY - touchStartY;
+    if (Math.abs(deltaX) < 60 || Math.abs(deltaX) <= Math.abs(deltaY) * 1.2) return;
+    const currentIndex = mobileViewNames.indexOf(document.body.dataset.mobileView || 'manage');
+    const nextIndex = deltaX < 0 ? currentIndex + 1 : currentIndex - 1;
+    if (nextIndex >= 0 && nextIndex < mobileViewNames.length) setMobileView(mobileViewNames[nextIndex]);
+  }, { passive: true });
+
+  const initialMobileView = location.hash.startsWith('#mobile-') ? location.hash.replace('#mobile-', '') : 'form';
+  updateLayoutMode();
+  window.addEventListener('resize', updateLayoutMode);
+  window.addEventListener('orientationchange', updateLayoutMode);
+  window.visualViewport?.addEventListener('resize', updateLayoutMode);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') refreshPrintersFromSheet({ reason: 'visible' });
+  });
+  window.addEventListener('pageshow', () => refreshPrintersFromSheet({ reason: 'pageshow' }));
+  setMobileView(initialMobileView, { updateHash: false });
+
+  // --- Initialize ---
+  loadData();
+});
+</script>
+<nav class="mobile-tabbar" aria-label="เมนูหลักบนมือถือ">
+  <a class="mobile-tab" data-mobile-view="manage" href="#mobile-manage"><span class="mobile-tab-icon">＋</span><span>จัดการ</span></a>
+  <a class="mobile-tab" data-mobile-view="list" href="#mobile-list"><span class="mobile-tab-icon">▦</span><span>รายการ</span></a>
+</nav>
+</body>
+</html>
+
+
+
