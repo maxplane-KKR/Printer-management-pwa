@@ -47,8 +47,8 @@ function listen() {
           schemaVersion: 2,
           syncedAt: '2026-08-11T05:00:00.000Z',
           printers: [{
-            id: 'sheet-1', name: 'LATEST-FROM-SHEET', ip: '10.0.0.1',
-            location: 'IT', type: 'Laser', status: 'online',
+            id: 'sheet-1', name: 'HP LaserJet MFP E52645 Long Department Printer', ip: '10.0.0.1',
+            location: 'WARD8', type: 'HP LaserJet MFP E52645', status: 'online',
             lastUpdated: '11/08/2026 12:00', note: 'latest'
           }]
         }), 20);
@@ -72,13 +72,17 @@ function listen() {
     tabs: document.querySelectorAll('.mobile-tab').length,
     widthOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
     heightOverflow: document.documentElement.scrollHeight - document.documentElement.clientHeight,
-    sideColumns: getComputedStyle(document.querySelector('.manage-grid > div:last-child')).gridTemplateColumns
+    sideColumns: getComputedStyle(document.querySelector('.manage-grid > div:last-child')).gridTemplateColumns,
+    headerHeight: document.querySelector('.container > h1').getBoundingClientRect().height,
+    navHeight: document.querySelector('.mobile-tabbar').getBoundingClientRect().height
   }));
   assert.equal(manageMetrics.layout, 'compact');
   assert.equal(manageMetrics.tabs, 2);
   assert.ok(manageMetrics.widthOverflow <= 1);
   assert.ok(manageMetrics.heightOverflow <= 1);
   assert.equal(manageMetrics.sideColumns.split(' ').length, 1, 'การ์ดเครื่องมือ/ภาพรวมต้องซ้อนแนวตั้ง');
+  assert.ok(manageMetrics.headerHeight >= 104, `Header มือถือต้องสูงอย่างน้อย 104px: ${manageMetrics.headerHeight}`);
+  assert.ok(manageMetrics.navHeight <= 62, `เมนูล่างมือถือต้องไม่สูงเกิน 62px: ${manageMetrics.navHeight}`);
 
   const container = page.locator('.container');
   await container.dispatchEvent('touchstart', { changedTouches: [{ identifier: 1, clientX: 360, clientY: 700 }] });
@@ -87,6 +91,10 @@ function listen() {
 
   const listMetrics = await page.evaluate(() => {
     const rows = [...document.querySelectorAll('#table-body tr')];
+    const firstRow = rows[0];
+    const primaryLine = firstRow?.querySelector('.mobile-printer-line');
+    const ipLine = firstRow?.querySelector('.mobile-ip-inline');
+    const metaLine = firstRow?.querySelector('.mobile-device-meta');
     const wrapper = document.querySelector('.table-wrapper').getBoundingClientRect();
     const pagination = document.querySelector('.pagination-controls').getBoundingClientRect();
     return {
@@ -94,13 +102,19 @@ function listen() {
       lastRowBottom: rows.at(-1).getBoundingClientRect().bottom,
       wrapperBottom: wrapper.bottom,
       paginationTop: pagination.top,
-      navTop: document.querySelector('.mobile-tabbar').getBoundingClientRect().top
+      navTop: document.querySelector('.mobile-tabbar').getBoundingClientRect().top,
+      threeLineTops: [primaryLine, ipLine, metaLine].filter(Boolean).map(element => Math.round(element.getBoundingClientRect().top)),
+      primaryLineHeight: primaryLine?.getBoundingClientRect().height || 0,
+      rowHeight: firstRow?.getBoundingClientRect().height || 0
     };
   });
   assert.equal(listMetrics.manageDisplay, 'none');
   assert.ok(listMetrics.lastRowBottom <= listMetrics.wrapperBottom + 1);
   assert.ok(listMetrics.wrapperBottom <= listMetrics.paginationTop);
   assert.ok(listMetrics.paginationTop < listMetrics.navTop);
+  assert.equal(new Set(listMetrics.threeLineTops).size, 3, `รายการมือถือแต่ละใบต้องมี 3 บรรทัด: ${JSON.stringify(listMetrics)}`);
+  assert.ok(listMetrics.primaryLineHeight <= 32, `ชื่อและสถานะต้องอยู่บรรทัดเดียว: ${JSON.stringify(listMetrics)}`);
+  assert.ok(listMetrics.rowHeight <= 92, `การ์ดรายการต้องกระชับไม่เกิน 92px: ${JSON.stringify(listMetrics)}`);
 
   await page.locator('#search-input').dispatchEvent('touchstart', { changedTouches: [{ identifier: 2, clientX: 350, clientY: 90 }] });
   await page.locator('#search-input').dispatchEvent('touchend', { changedTouches: [{ identifier: 2, clientX: 80, clientY: 90 }] });
