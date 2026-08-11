@@ -7,6 +7,15 @@ const root = path.resolve(__dirname, '..');
 const readRootFile = fileName => fs.readFileSync(path.join(root, fileName), 'utf8');
 
 (async () => {
+const html = readRootFile('Index.html');
+assert.match(html, /<link rel="manifest" href="\/manifest\.webmanifest">/);
+assert.match(html, /<link rel="apple-touch-icon" sizes="180x180" href="\/assets\/icons\/apple-touch-icon\.png">/);
+assert.match(html, /<link rel="icon" href="\/assets\/icons\/favicon\.ico" sizes="any">/);
+assert.match(html, /<link rel="mask-icon" href="\/assets\/icons\/safari-pinned-tab\.svg" color="#20252B">/);
+assert.match(html, /<meta name="theme-color" content="#F4C95D">/);
+assert.match(html, /<meta name="msapplication-TileImage" content="\/assets\/icons\/mstile-150x150\.png">/);
+assert.match(html, /navigator\.serviceWorker\.register\('\/service-worker\.js'\)/);
+
 const manifest = JSON.parse(readRootFile('manifest.webmanifest'));
 
 assert.equal(manifest.id, '/');
@@ -138,8 +147,11 @@ await Promise.all(backgroundTasks);
 assert.deepEqual(fetchedUrls, ['https://printer.example/assets/icons/icon-192.png']);
 
 const vercel = JSON.parse(readRootFile('vercel.json'));
+const packageMetadata = JSON.parse(readRootFile('package.json'));
 assert.deepEqual(vercel.rewrites, [{ source: '/', destination: '/Index.html' }]);
-assert.equal(vercel.functions['api/*.js'].runtime, 'nodejs20.x');
+assert.equal(packageMetadata.private, true);
+assert.equal(packageMetadata.engines.node, '24.x');
+assert.equal(vercel.functions, undefined, 'Node runtime ต้องกำหนดด้วย package.json engines');
 
 const serviceWorkerHeader = vercel.headers.find(route => route.source === '/service-worker.js');
 assert.ok(serviceWorkerHeader, 'Vercel ต้องกำหนด header ให้ service worker');

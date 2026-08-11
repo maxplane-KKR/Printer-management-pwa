@@ -1,10 +1,22 @@
 <!DOCTYPE html>
-<html lang="th" data-app-script-url="<?!= webAppUrl ?>">
+<html lang="th" data-api-url="/api/printers">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F4C95D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Printer Pro">
+<meta name="msapplication-TileColor" content="#F4C95D">
+<meta name="msapplication-TileImage" content="/assets/icons/mstile-150x150.png">
 <base target="_top">
-<title>Printer Management Pro - VPN Edition</title>
+<title>Printer Management Pro</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png">
+<link rel="icon" href="/assets/icons/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png">
+<link rel="mask-icon" href="/assets/icons/safari-pinned-tab.svg" color="#20252B">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style type="text/css">
   @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap');
@@ -2070,10 +2082,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const storageKey = 'enterprisePrintersDB';
   const dataVersionKey = 'enterprisePrintersDataVersion';
   const currentDataVersion = '2026-08-11-no-mac-v2';
-  const templateAppScriptUrl = document.documentElement.dataset.appScriptUrl;
-  const appsScriptUrl = templateAppScriptUrl && templateAppScriptUrl.startsWith('https://script.google.com/macros/s/')
-    ? templateAppScriptUrl
-    : '';
+  const apiUrl = document.documentElement.dataset.apiUrl || '/api/printers';
   let sheetSyncTimer = null;
   let sheetWritePromise = Promise.resolve();
   let sheetRefreshPromise = null;
@@ -2141,14 +2150,16 @@ document.addEventListener('DOMContentLoaded', function() {
             .withFailureHandler(reject)
             .savePrintersToSheet(payload);
         });
-      } else if (appsScriptUrl) {
-        await fetch(appsScriptUrl, {
-          method: 'POST', mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      } else {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload), keepalive: true
         });
-      } else {
-        throw new Error('ไม่พบ Apps Script URL สำหรับบันทึกข้อมูล');
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.ok) {
+          throw new Error(result?.error || result?.code || 'บันทึกลงชีตไม่สำเร็จ');
+        }
       }
       setSheetSyncStatus('synced');
     } catch (error) {
@@ -2198,26 +2209,35 @@ document.addEventListener('DOMContentLoaded', function() {
       return Promise.resolve({ ok: false, deferred: true, reason });
     }
     if (sheetRefreshPromise) return sheetRefreshPromise;
-    if (!window.google?.script?.run) {
-      setSheetSyncStatus('local');
-      return Promise.resolve({ ok: false, local: true, reason });
-    }
 
     sheetRefreshPromise = (async () => {
       await sheetWritePromise;
       setSheetSyncStatus('pending');
-      const result = await new Promise((resolve, reject) => {
-        google.script.run
-          .withSuccessHandler(resolve)
-          .withFailureHandler(reject)
-          .getPrintersFromSheet();
-      });
+      let result;
+      if (window.google?.script?.run) {
+        result = await new Promise((resolve, reject) => {
+          google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(reject)
+            .getPrintersFromSheet();
+        });
+      } else {
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-store'
+        });
+        result = await response.json().catch(() => null);
+        if (!response.ok || !result?.ok) {
+          throw new Error(result?.error || result?.code || 'โหลดข้อมูลล่าสุดจากชีตไม่สำเร็จ');
+        }
+      }
       applySheetSnapshot(result);
       return result;
     })().catch(error => {
-      setSheetSyncStatus('error');
+      setSheetSyncStatus('local');
       console.warn('Google Sheets refresh failed; local data remains available.', error);
-      return { ok: false, error: error?.message || String(error) };
+      return { ok: false, local: true, error: error?.message || String(error) };
     }).finally(() => {
       sheetRefreshPromise = null;
     });
@@ -2870,6 +2890,13 @@ Write-Host "Done! Return to the web dashboard and click 'Import'." -ForegroundCo
   setMobileView(initialMobileView, { updateHash: false });
 
   // --- Initialize ---
+  if ('serviceWorker' in navigator && location.protocol === 'https:') {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js').catch(error => {
+        console.warn('Service worker registration failed.', error);
+      });
+    });
+  }
   loadData();
 });
 </script>

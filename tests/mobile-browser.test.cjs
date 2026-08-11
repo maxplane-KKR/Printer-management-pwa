@@ -10,7 +10,32 @@ assert.ok(chromePath, 'ต้องกำหนด PRINTER_CHROME_PATH');
 const { chromium } = require(playwrightPath);
 
 const html = fs.readFileSync(path.join(__dirname, '..', 'Index.html'));
+let sheetReads = 0;
+let sheetWrites = 0;
+const sheetSnapshot = {
+  ok: true,
+  schemaVersion: 2,
+  syncedAt: '2026-08-11T05:00:00.000Z',
+  printers: [{
+    id: 'sheet-1', name: 'HP LaserJet MFP E52645 Long Department Printer', ip: '10.0.0.1',
+    location: 'WARD8', type: 'HP LaserJet MFP E52645', status: 'online',
+    lastUpdated: '11/08/2026 12:00', note: 'latest'
+  }]
+};
 const server = http.createServer((request, response) => {
+  if (request.url === '/api/printers') {
+    response.setHeader('Content-Type', 'application/json; charset=utf-8');
+    if (request.method === 'GET') {
+      sheetReads += 1;
+      response.end(JSON.stringify(sheetSnapshot));
+      return;
+    }
+    if (request.method === 'POST') {
+      sheetWrites += 1;
+      response.end(JSON.stringify({ ok: true, syncedRows: sheetSnapshot.printers.length }));
+      return;
+    }
+  }
   response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
   response.end(html);
 });
@@ -31,41 +56,15 @@ function listen() {
   page.setDefaultTimeout(5000);
   page.setDefaultNavigationTimeout(10000);
 
-  await page.addInitScript(() => {
-    window.__sheetReads = 0;
-    window.__sheetWrites = 0;
-    const runner = {
-      success: null,
-      failure: null,
-      withSuccessHandler(handler) { this.success = handler; return this; },
-      withFailureHandler(handler) { this.failure = handler; return this; },
-      getPrintersFromSheet() {
-        window.__sheetReads += 1;
-        const success = this.success;
-        setTimeout(() => success({
-          ok: true,
-          schemaVersion: 2,
-          syncedAt: '2026-08-11T05:00:00.000Z',
-          printers: [{
-            id: 'sheet-1', name: 'HP LaserJet MFP E52645 Long Department Printer', ip: '10.0.0.1',
-            location: 'WARD8', type: 'HP LaserJet MFP E52645', status: 'online',
-            lastUpdated: '11/08/2026 12:00', note: 'latest'
-          }]
-        }), 20);
-      },
-      savePrintersToSheet() { window.__sheetWrites += 1; }
-    };
-    window.google = { script: { run: runner } };
-  });
-
   await page.goto(url, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => document.body.dataset.sheetSync === 'synced');
-  assert.equal(await page.evaluate(() => window.__sheetWrites), 0, 'เปิดหน้าต้องไม่เขียน local data ทับชีต');
+  assert.equal(sheetWrites, 0, 'เปิดหน้าต้องไม่เขียน local data ทับชีต');
   assert.equal(await page.locator('#stat-total').textContent(), '1', 'ข้อมูลจากชีตต้องแทน local cache ทั้งชุด');
 
-  const startupReads = await page.evaluate(() => window.__sheetReads);
+  const startupReads = sheetReads;
   await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pageshow')));
-  await page.waitForFunction(previous => window.__sheetReads > previous, startupReads);
+  await page.waitForTimeout(100);
+  assert.ok(sheetReads > startupReads, 'pageshow ต้องโหลด snapshot ล่าสุดผ่าน same-origin API');
 
   const manageMetrics = await page.evaluate(() => ({
     layout: document.body.dataset.layout,

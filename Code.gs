@@ -5,8 +5,9 @@
  * 1) แนะนำให้สร้าง Apps Script จาก Google Sheet เป้าหมาย (Bound script)
  * 2) วางไฟล์นี้เป็น Code.gs
  * 3) Deploy > New deployment > Web app
- * 4) Execute as: Me, Who has access: Anyone
- * 5) นำ URL /exec ไปใส่ใน appsScriptUrl ของไฟล์ HTML
+ * 4) Execute as: Me และกำหนดสิทธิ์เข้าถึงตามนโยบายของระบบ
+ * 5) ตั้ง Script Property ชื่อ API_SHARED_SECRET
+ * 6) ตั้ง APPS_SCRIPT_URL และ API_SHARED_SECRET ค่าเดียวกันใน Vercel Environment Variables
  *
  * หากใช้ Standalone script ให้เพิ่ม Script Property ชื่อ SPREADSHEET_ID
  * โดยไม่ต้องเขียน Spreadsheet ID ลงใน source code
@@ -33,10 +34,8 @@ const HEADERS = Object.freeze([
 ]);
 
 function doGet() {
-  const template = HtmlService.createTemplateFromFile('Index');
-  template.webAppUrl = ScriptApp.getService().getUrl() || '';
-  return template
-    .evaluate()
+  return HtmlService
+    .createHtmlOutputFromFile('Index')
     .setTitle('Printer Management Pro')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover');
 }
