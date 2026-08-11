@@ -10,6 +10,7 @@ from PIL import Image
 ROOT = Path(__file__).resolve().parents[1]
 ICONS = ROOT / "assets" / "icons"
 MASTER = ICONS / "icon-master-1024.png"
+MASKABLE_BACKGROUND = (253, 198, 46, 255)
 
 OUTPUT_SIZES = {
     "icon-192.png": 192,
@@ -19,8 +20,12 @@ OUTPUT_SIZES = {
 }
 
 
-def centered_variant(source, size, artwork_ratio):
-    background = Image.new("RGBA", (size, size), source.getpixel((0, 0)))
+def centered_variant(source, size, artwork_ratio, background_color=None):
+    background = Image.new(
+        "RGBA",
+        (size, size),
+        background_color or source.getpixel((0, 0)),
+    )
     artwork_size = round(size * artwork_ratio)
     artwork = source.resize((artwork_size, artwork_size), Image.Resampling.LANCZOS)
     offset = (size - artwork_size) // 2
@@ -40,9 +45,16 @@ def main():
             optimize=True,
         )
 
+    maskable_inset = round(master.width * 0.0625)
+    maskable_source = master.crop((
+        maskable_inset,
+        maskable_inset,
+        master.width - maskable_inset,
+        master.height - maskable_inset,
+    ))
     for size in (192, 512):
-        centered_variant(master, size, 0.66).save(
-            ICONS / f"icon-maskable-{size}.png",
+        centered_variant(maskable_source, size, 0.66, MASKABLE_BACKGROUND).save(
+            ICONS / f"icon-maskable-{size}-v2.png",
             optimize=True,
         )
 

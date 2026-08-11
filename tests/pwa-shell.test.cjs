@@ -34,8 +34,8 @@ async function main() {
   const expectedIcons = [
     ['/assets/icons/icon-192.png', '192x192', 'any'],
     ['/assets/icons/icon-512.png', '512x512', 'any'],
-    ['/assets/icons/icon-maskable-192.png', '192x192', 'maskable'],
-    ['/assets/icons/icon-maskable-512.png', '512x512', 'maskable']
+    ['/assets/icons/icon-maskable-192-v2.png', '192x192', 'maskable'],
+    ['/assets/icons/icon-maskable-512-v2.png', '512x512', 'maskable']
   ];
 
   for (const [src, sizes, purpose] of expectedIcons) {

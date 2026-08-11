@@ -8,8 +8,8 @@ const expectedPngs = new Map([
   ['assets/icons/icon-master-1024.png', [1024, 1024]],
   ['assets/icons/icon-192.png', [192, 192]],
   ['assets/icons/icon-512.png', [512, 512]],
-  ['assets/icons/icon-maskable-192.png', [192, 192]],
-  ['assets/icons/icon-maskable-512.png', [512, 512]],
+  ['assets/icons/icon-maskable-192-v2.png', [192, 192]],
+  ['assets/icons/icon-maskable-512-v2.png', [512, 512]],
   ['assets/icons/apple-touch-icon.png', [180, 180]],
   ['assets/icons/favicon-16x16.png', [16, 16]],
   ['assets/icons/favicon-32x32.png', [32, 32]],
@@ -43,7 +43,7 @@ function sha256(file) {
 
 assert.notEqual(
   sha256('assets/icons/icon-192.png'),
-  sha256('assets/icons/icon-maskable-192.png'),
+  sha256('assets/icons/icon-maskable-192-v2.png'),
   'maskable icon ต้องเป็น safe-zone variant ไม่ใช่ไฟล์เดียวกับไอคอนปกติ'
 );
 

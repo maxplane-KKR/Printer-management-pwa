@@ -148,6 +148,7 @@ function waitForSheetRead(previousCount, timeoutMs = 2000) {
   for (const viewport of [
     { width: 320, height: 720 },
     { width: 430, height: 720 },
+    { width: 430, height: 932 },
     { width: 812, height: 375 },
     { width: 1024, height: 768 }
   ]) {
@@ -166,6 +167,9 @@ function waitForSheetRead(previousCount, timeoutMs = 2000) {
         cardOverflow: [...document.querySelectorAll('#mobile-form,#mobile-tools,#mobile-overview')]
           .map(element => ({ id: element.id, client: element.clientHeight, scroll: element.scrollHeight })),
         formControlGap: submitTop - finalInputBottom,
+        toolCardHeight: document.querySelector('#mobile-tools').getBoundingClientRect().height,
+        maxToolButtonHeight: Math.max(...[...document.querySelectorAll('#mobile-tools .btn')]
+          .map(element => element.getBoundingClientRect().height)),
         minControlHeight: Math.min(...[...document.querySelectorAll('#printer-form input:not([type="hidden"]),#printer-form button:not([style*="display: none"])')]
           .map(element => element.getBoundingClientRect().height).filter(Boolean))
       };
@@ -178,8 +182,13 @@ function waitForSheetRead(previousCount, timeoutMs = 2000) {
       false,
       `${viewport.width}px content ต้องไม่ล้นการ์ด: ${JSON.stringify(metrics.cardOverflow)}`
     );
-    assert.ok(metrics.formControlGap >= 4, `${viewport.width}px ปุ่มบันทึกต้องไม่ทับช่อง Type/Notes: ${JSON.stringify(metrics)}`);
+    const requiredFormGap = viewport.width === 430 && viewport.height === 932 ? 12 : 4;
+    assert.ok(metrics.formControlGap >= requiredFormGap, `${viewport.width}px ปุ่มบันทึกต้องเว้นจากช่อง Type/Notes อย่างน้อย ${requiredFormGap}px: ${JSON.stringify(metrics)}`);
     assert.ok(metrics.minControlHeight >= 44, `${viewport.width}px touch target ต้องไม่น้อยกว่า 44px`);
+    if (viewport.width === 430 && viewport.height === 932) {
+      assert.ok(metrics.toolCardHeight <= 200, `POCO viewport การ์ดเครื่องมือต้องกระชับไม่เกิน 200px: ${JSON.stringify(metrics)}`);
+      assert.ok(metrics.maxToolButtonHeight <= 48, `POCO viewport ปุ่มเครื่องมือต้องไม่สูงเกิน 48px: ${JSON.stringify(metrics)}`);
+    }
   }
 
   await page.setViewportSize({ width: 1025, height: 768 });
