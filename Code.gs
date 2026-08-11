@@ -43,13 +43,25 @@ function doGet() {
 
 function doPost(event) {
   try {
-    return jsonResponse_(savePrintersToSheet(parsePayload_(event)));
+    const payload = parsePayload_(event);
+    verifyApiSecret_(payload.token);
+    if (payload.action === 'getPrinters') {
+      return jsonResponse_(getPrintersFromSheet());
+    }
+    return jsonResponse_(savePrintersToSheet(payload));
   } catch (error) {
     console.error(error);
     return jsonResponse_({
       ok: false,
       error: error && error.message ? error.message : String(error)
     });
+  }
+}
+
+function verifyApiSecret_(providedToken) {
+  const expectedToken = PropertiesService.getScriptProperties().getProperty('API_SHARED_SECRET');
+  if (!expectedToken || !providedToken || providedToken !== expectedToken) {
+    throw new Error('Unauthorized API request');
   }
 }
 
