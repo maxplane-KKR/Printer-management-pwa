@@ -197,6 +197,31 @@ function waitForSheetRead(previousCount, timeoutMs = 2000) {
   assert.equal(await page.evaluate(() => document.body.dataset.layout), 'desktop', '1025px ต้องเป็น desktop แม้มี scrollbar');
   assert.equal(await page.locator('.mobile-tabbar').evaluate(element => getComputedStyle(element).display), 'none');
 
+  await page.setViewportSize({ width: 1920, height: 1080 });
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await page.waitForTimeout(80);
+  const desktopToolMetrics = await page.evaluate(() => {
+    const buttons = [...document.querySelectorAll('#mobile-tools .btn')]
+      .map(element => element.getBoundingClientRect());
+    const rounded = values => [...new Set(values.map(value => Math.round(value)))];
+    return {
+      buttonCount: buttons.length,
+      hasBackup: Boolean(document.querySelector('#backup-btn')),
+      hasRestore: Boolean(document.querySelector('#restore-btn')),
+      rows: rounded(buttons.map(rect => rect.top)).length,
+      columns: rounded(buttons.map(rect => rect.left)).length,
+      widthSpread: Math.max(...buttons.map(rect => rect.width)) - Math.min(...buttons.map(rect => rect.width)),
+      cardOverflow: document.querySelector('#mobile-tools').scrollWidth - document.querySelector('#mobile-tools').clientWidth
+    };
+  });
+  assert.equal(desktopToolMetrics.hasBackup, false, 'Desktop ต้องไม่มีปุ่ม Backup');
+  assert.equal(desktopToolMetrics.hasRestore, false, 'Desktop ต้องไม่มีปุ่ม Restore');
+  assert.equal(desktopToolMetrics.buttonCount, 4, `Desktop ต้องเหลือปุ่มเครื่องมือ 4 ปุ่ม: ${JSON.stringify(desktopToolMetrics)}`);
+  assert.equal(desktopToolMetrics.rows, 2, `Desktop ต้องเรียงปุ่มเครื่องมือ 2 แถว: ${JSON.stringify(desktopToolMetrics)}`);
+  assert.equal(desktopToolMetrics.columns, 2, `Desktop ต้องเรียงปุ่มเครื่องมือ 2 คอลัมน์: ${JSON.stringify(desktopToolMetrics)}`);
+  assert.ok(desktopToolMetrics.widthSpread <= 1, `ปุ่ม Desktop ต้องกว้างเท่ากัน: ${JSON.stringify(desktopToolMetrics)}`);
+  assert.ok(desktopToolMetrics.cardOverflow <= 1, `ปุ่ม Desktop ต้องไม่ล้นการ์ด: ${JSON.stringify(desktopToolMetrics)}`);
+
   await browser.close();
   server.close();
   console.log('mobile browser behavior tests passed');

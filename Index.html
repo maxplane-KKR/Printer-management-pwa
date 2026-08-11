@@ -459,7 +459,7 @@
     #cancel-edit-btn { margin-top: 6px !important; }
 
     #mobile-tools { display: grid; grid-template-rows: auto minmax(0, 1fr); padding: var(--compact-card-padding); overflow: hidden; }
-    .tool-actions-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--compact-card-gap); width: 100%; }
+    .tool-actions-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--compact-card-gap); width: 100%; }
     #mobile-tools .tool-actions-grid { height: 100%; align-self: stretch; grid-template-rows: repeat(2, minmax(44px, 1fr)); }
     .tool-actions-grid .btn { width: 100%; height: 100%; min-height: 44px; padding: 6px; font-size: clamp(.75rem, 1.8vw, 1rem); }
     .tools-section-title { margin-bottom: 0; font-size: .76rem; }
@@ -544,7 +544,7 @@
 
   @media (max-width: 480px) {
     .tool-actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    #mobile-tools .tool-actions-grid { grid-template-rows: repeat(3, minmax(44px, 1fr)); }
+    #mobile-tools .tool-actions-grid { grid-template-rows: repeat(2, minmax(44px, 1fr)); }
   }
 
   @media (max-width: 480px) and (min-height: 900px) {
@@ -560,7 +560,7 @@
     #mobile-tools .tool-actions-grid {
       height: auto;
       align-self: center;
-      grid-template-rows: repeat(3, 44px);
+      grid-template-rows: repeat(2, 44px);
       gap: 6px;
     }
     #mobile-tools .tool-actions-grid .btn {
@@ -605,7 +605,7 @@
       box-shadow: 2px 2px 0 rgba(32, 37, 43, .94), inset 2px 2px 0 rgba(255,255,255,.72), inset -3px -3px 8px rgba(32,37,43,.08) !important;
     }
     #mobile-overview #stat-total, #mobile-overview #stat-offline { font-size: clamp(2rem, 4.4vw, 2.8rem) !important; }
-    .tool-actions-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .tool-actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     #mobile-tools .tool-actions-grid { grid-template-rows: repeat(2, minmax(44px, 1fr)); }
   }
 
@@ -656,6 +656,13 @@
   @media (min-width: 1025px) {
     .manage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     #mobile-manage, #mobile-list { display: block; }
+    #mobile-tools .tool-actions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      width: 100%;
+    }
+    #mobile-tools .tool-actions-grid .btn { width: 100%; min-height: 44px; }
   }
 
   .container > h1 {
@@ -796,8 +803,6 @@
       <div class="tools-bar" id="mobile-tools">
         <div class="tools-section-title">ฐานข้อมูล (Database Tools)</div>
         <div class="tool-actions-grid">
-          <button id="backup-btn" class="btn btn-primary btn-sm">💾 Backup</button>
-          <button id="restore-btn" class="btn btn-warning btn-sm">↩️ Restore</button>
           <button id="sync-sheet-btn" class="btn btn-sheet btn-sm">☁️ บันทึกลงชีต</button>
           <button id="export-csv-btn" class="btn btn-success btn-sm">📊 Export CSV</button>
           <button id="copy-ping-script-btn" class="btn btn-danger btn-sm" title="คัดลอกคำสั่งไปรันบน PowerShell เพื่อเช็คสถานะผ่าน TCP">1. 📋 สคริปต์ TCP</button>
@@ -2126,7 +2131,6 @@ document.addEventListener('DOMContentLoaded', function() {
   let sheetWritePromise = Promise.resolve();
   let sheetRefreshPromise = null;
   let deferredSheetRefresh = false;
-  const backupStorageKey = 'enterprisePrintersDB_Backup';
   let printers = [];
   let filteredPrinters = [];
   let currentSort = { key: 'ip', direction: 'asc' };
@@ -2663,29 +2667,6 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // --- Database Tools ---
-  document.getElementById('backup-btn').addEventListener('click', () => {
-    localStorage.setItem(backupStorageKey, JSON.stringify(printers));
-    Swal.fire({ icon: 'success', title: 'สร้าง Backup ในเบราว์เซอร์แล้ว', toast: true, position: 'top-end', showConfirmButton: false, timer: 1500 });
-  });
-
-  document.getElementById('restore-btn').addEventListener('click', () => {
-    const backup = localStorage.getItem(backupStorageKey);
-    if (!backup) return Swal.fire('ไม่พบไฟล์ Backup', 'ไม่เคยมีการสร้างแบ็คอัพไว้ในเครื่องนี้', 'error');
-    Swal.fire({
-        title: 'ยืนยันกู้คืนข้อมูล?',
-        text: 'ข้อมูลปัจจุบันจะถูกเขียนทับด้วย Backup',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'กู้คืน'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            printers = JSON.parse(backup);
-            saveData(); updateFilterOptions(); applyFilters();
-            Swal.fire('สำเร็จ!', 'กู้คืนข้อมูลเรียบร้อย', 'success');
-        }
-    });
-  });
-
   document.getElementById('sync-sheet-btn').addEventListener('click', async function() {
     const originalText = this.textContent;
     this.disabled = true;
