@@ -10,10 +10,25 @@ assert.ok(chromePath, 'ต้องกำหนด PRINTER_CHROME_PATH');
 const { chromium } = require(playwrightPath);
 
 const html = fs.readFileSync(path.join(__dirname, '..', 'Index.html'));
+const printerFixtures = Array.from({ length: 8 }, (_, index) => ({
+  id: `fixture-${index + 1}`,
+  name: `Printer ${index + 1}`,
+  ip: `10.0.0.${index + 1}`,
+  location: 'WARD8',
+  type: 'HP LaserJet MFP E52645',
+  note: '',
+  status: index % 2 === 0 ? 'online' : 'offline',
+  lastUpdated: '12/08/2026 17:30',
+}));
+let servedPrinters = [];
 const server = http.createServer((request, response) => {
   if (request.url === '/api/printers') {
     response.setHeader('Content-Type', 'application/json; charset=utf-8');
-    response.end(JSON.stringify({ ok: true, schemaVersion: 2, printers: [] }));
+    response.end(JSON.stringify({
+      ok: true,
+      schemaVersion: 2,
+      printers: servedPrinters,
+    }));
     return;
   }
 
@@ -37,6 +52,7 @@ let browser;
   ];
 
   for (const viewport of cases) {
+    servedPrinters = viewport.width === 384 ? printerFixtures : [];
     await page.setViewportSize(viewport);
     await page.goto(`http://127.0.0.1:${port}/Index.html`, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(100);
@@ -100,9 +116,11 @@ let browser;
       const listMetrics = await page.evaluate(() => ({
         widthOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
         heightOverflow: document.documentElement.scrollHeight - document.documentElement.clientHeight,
+        rowCount: document.querySelectorAll('#table-body tr').length,
         tableRight: document.querySelector('#mobile-list .table-wrapper').getBoundingClientRect().right,
         viewportWidth: window.innerWidth,
       }));
+      if (viewport.width === 384) assert.equal(listMetrics.rowCount, 4, `384x824px mobile list must show four rows: ${JSON.stringify(listMetrics)}`);
       assert.ok(listMetrics.widthOverflow <= 1, `แท็บรายการต้องไม่ล้นแนวนอน: ${JSON.stringify(listMetrics)}`);
       assert.ok(listMetrics.heightOverflow <= 1, `แท็บรายการต้องไม่ล้นแนวตั้ง: ${JSON.stringify(listMetrics)}`);
       assert.ok(listMetrics.tableRight <= listMetrics.viewportWidth + 1, `ตารางต้องไม่ล้น viewport: ${JSON.stringify(listMetrics)}`);
