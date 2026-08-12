@@ -279,14 +279,14 @@
 </style>
 <style data-mobile-nav="native">
   .mobile-tabbar { display: none; }
-  @media (max-width: 1024px) {
+  @media (max-width: 1023px) {
     .container > .grid-2 { grid-template-columns: minmax(0, 1fr); }
     .tools-bar .btn { flex: 1 1 calc(50% - 10px); }
     .btn-sm { min-height: 44px; }
     .search-wrapper input { padding-right: 52px; }
     .clear-search-btn { right: 2px; width: 44px; height: 44px; }
   }
-  @media (max-width: 1024px) {
+  @media (max-width: 1023px) {
     body { padding-bottom: calc(90px + env(safe-area-inset-bottom)); }
     .container > .grid-2,
     .container > .grid-2 > div { display: contents; }
@@ -366,7 +366,7 @@
 <style data-mobile-table="compact">
   .mobile-printer-line { display: contents; }
   .mobile-status-inline, .mobile-device-meta, .mobile-note-inline, .mobile-ip-inline { display: none; }
-  @media (max-width: 1024px) {
+  @media (max-width: 1023px) {
     #main-table { width: 100%; min-width: 0 !important; table-layout: fixed; }
     #main-table th:nth-child(1), #main-table td:nth-child(1) { width: 34px; padding-inline: 5px; }
     #main-table th:nth-child(2), #main-table td:nth-child(2) { width: auto; }
@@ -403,7 +403,7 @@
   .tool-actions-grid { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
   .btn, .mobile-tab { touch-action: manipulation; }
 
-  @media (max-width: 1024px) {
+  @media (max-width: 1023px) {
     html, body { width: 100%; height: 100dvh; min-height: 0; overflow: hidden; }
     body {
       height: 100dvh;
@@ -533,7 +533,7 @@
     #mobile-list .pagination-controls .btn { padding-inline: 9px; }
   }
 
-  @media (min-width: 600px) and (max-width: 1024px) {
+  @media (min-width: 600px) and (max-width: 1023px) {
     :root { --compact-nav-height: 92px; }
     .container > h1 { min-height: clamp(156px, 16dvh, 200px); padding-block: 18px; align-items: center; text-align: center; font-size: clamp(2.25rem, 5vw, 3rem); }
     .container > h1 span { display: block; margin-top: 6px; font-size: .5em !important; }
@@ -572,7 +572,7 @@
     #mobile-tools .tools-section-title { margin-bottom: 2px; }
   }
 
-  @media (max-height: 540px) and (max-width: 1024px) {
+  @media (max-height: 540px) and (max-width: 1023px) {
     :root { --compact-card-padding: 4px; --compact-card-gap: 4px; --compact-nav-height: 66px; }
     .manage-grid { grid-template-columns: minmax(0, 1.15fr) minmax(260px, .85fr); grid-template-rows: minmax(0, 1fr); }
     .manage-grid > div:last-child { min-height: 0; display: grid; grid-template-rows: minmax(121px, 1fr) 88px; gap: 7px; overflow: hidden; }
@@ -590,7 +590,7 @@
     .mobile-tab-icon { font-size: 1.18rem; }
   }
 
-  @media (max-height: 800px) and (max-width: 1024px) {
+  @media (max-height: 800px) and (max-width: 1023px) {
     :root {
       --compact-card-padding: clamp(4px, 1dvh, 8px);
       --compact-card-gap: clamp(4px, .8dvh, 5px);
@@ -609,6 +609,24 @@
     #mobile-tools .tool-actions-grid { grid-template-rows: repeat(2, minmax(44px, 1fr)); }
   }
 
+  @media (max-width: 480px) and (min-height: 801px) and (max-height: 899px) {
+    .manage-grid {
+      grid-template-rows: minmax(0, 1fr) 166px 129px;
+    }
+    #printer-form { grid-template-rows: auto auto auto; align-content: start; gap: 14px; }
+    #mobile-form .form-group label { height: 15px; line-height: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #mobile-form form > div:last-child { margin-top: 18px !important; }
+    .printer-form-grid { row-gap: 14px; }
+    #mobile-tools .tool-actions-grid {
+      height: auto;
+      align-self: center;
+      grid-template-rows: repeat(2, 55px);
+      gap: 7px;
+    }
+    #mobile-tools .tool-actions-grid .btn {
+      height: 55px;
+    }
+  }
   @media (max-width: 480px) and (min-height: 600px) and (max-height: 800px) {
     .manage-grid {
       grid-template-rows: minmax(296px, 1.65fr) minmax(126px, .75fr) minmax(109px, .6fr);
@@ -626,7 +644,7 @@
     }
   }
 
-  @media (max-height: 540px) and (max-width: 1024px) {
+  @media (max-height: 540px) and (max-width: 1023px) {
     :root { --compact-nav-height: 54px; }
     .manage-grid { grid-template-rows: minmax(0, 1fr); }
     .container > h1 {
@@ -653,7 +671,7 @@
     }
   }
 
-  @media (min-width: 1025px) {
+  @media (min-width: 1024px) {
     .manage-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     #mobile-manage, #mobile-list { display: block; }
     #mobile-tools .tool-actions-grid {
@@ -743,11 +761,11 @@
     .container > h1 { min-height: clamp(104px, 12dvh, 116px); }
   }
 
-  @media (max-height: 540px) and (max-width: 1024px) {
+  @media (max-height: 540px) and (max-width: 1023px) {
     .container > h1::before { right: 1%; width: 24%; opacity: .09; }
   }
 
-  @media (min-width: 1025px) {
+  @media (min-width: 1024px) {
     .container > h1::before { width: 24%; }
   }
 </style>
@@ -2854,7 +2872,7 @@ Write-Host "Done! Return to the web dashboard and click 'Import'." -ForegroundCo
   let touchStartTarget = null;
   function isDesktopScreen() {
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-    return viewportWidth >= 1025;
+    return viewportWidth >= 1024;
   }
 
   function isCompactLayout() {

@@ -16,7 +16,8 @@ const isDesktopScreen = new Function('document', 'window', desktopFunctionBody);
 const viewportCases = [
   { viewportWidth: 320, screenWidth: 1920, screenHeight: 1080, expected: false },
   { viewportWidth: 768, screenWidth: 1366, screenHeight: 768, expected: false },
-  { viewportWidth: 1024, screenWidth: 1920, screenHeight: 1080, expected: false },
+  { viewportWidth: 1023, screenWidth: 1920, screenHeight: 1080, expected: false },
+  { viewportWidth: 1024, screenWidth: 1920, screenHeight: 1080, expected: true },
   { viewportWidth: 1025, clientWidth: 1010, screenWidth: 1366, screenHeight: 768, expected: true },
   { viewportWidth: 1025, screenWidth: 1366, screenHeight: 768, expected: true },
   { viewportWidth: 1366, screenWidth: 1366, screenHeight: 768, expected: true },
@@ -56,7 +57,7 @@ assert.doesNotMatch(
 );
 
 const compactBreakpointCount = (
-  mobileNavStyleMatch[1].match(/@media \(max-width: 1024px\)/g) || []
+  mobileNavStyleMatch[1].match(/@media \(max-width: 1023px\)/g) || []
 ).length;
 assert.ok(
   compactBreakpointCount >= 2,
@@ -84,7 +85,7 @@ const mobileTableStyleMatch = html.match(
 assert.ok(mobileTableStyleMatch, 'ต้องพบ style ของ mobile table');
 assert.match(
   mobileTableStyleMatch[1],
-  /@media \(max-width: 1024px\)/,
+  /@media \(max-width: 1023px\)/,
   'mobile table ต้องครอบคลุม viewport ถึง 1024px'
 );
 assert.match(

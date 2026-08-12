@@ -150,7 +150,7 @@ function waitForSheetRead(previousCount, timeoutMs = 2000) {
     { width: 430, height: 720 },
     { width: 430, height: 932 },
     { width: 812, height: 375 },
-    { width: 1024, height: 768 }
+    { width: 1023, height: 768 }
   ]) {
     await page.setViewportSize(viewport);
     await page.waitForTimeout(80);
@@ -191,10 +191,10 @@ function waitForSheetRead(previousCount, timeoutMs = 2000) {
     }
   }
 
-  await page.setViewportSize({ width: 1025, height: 768 });
+  await page.setViewportSize({ width: 1024, height: 768 });
   await page.reload({ waitUntil: 'domcontentloaded' });
   await page.waitForTimeout(80);
-  assert.equal(await page.evaluate(() => document.body.dataset.layout), 'desktop', '1025px ต้องเป็น desktop แม้มี scrollbar');
+  assert.equal(await page.evaluate(() => document.body.dataset.layout), 'desktop', '1024px ต้องเป็น desktop แม้มี scrollbar');
   assert.equal(await page.locator('.mobile-tabbar').evaluate(element => getComputedStyle(element).display), 'none');
 
   await page.setViewportSize({ width: 1920, height: 1080 });

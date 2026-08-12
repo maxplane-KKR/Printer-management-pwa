@@ -18,6 +18,6 @@ assert.doesNotMatch(html, /url\(["']assets\//, 'ห้ามอ้าง asset �
 assert.match(html, /\.container\s*>\s*h1::before/);
 assert.match(html, /pointer-events:\s*none/);
 assert.match(html, /@media\s*\(max-width:\s*480px\)/);
-assert.match(html, /@media\s*\(min-width:\s*1025px\)/);
+assert.match(html, /@media\s*\(min-width:\s*1024px\)/);
 
 console.log('header watermark contract tests passed');
