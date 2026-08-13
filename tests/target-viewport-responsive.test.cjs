@@ -104,11 +104,12 @@ let browser;
       assert.ok(Math.abs(mobileManageMetrics.toolsHeight - 166) <= 0.5, `384x824 database card must free 18px for the form: ${JSON.stringify(mobileManageMetrics)}`);
       assert.ok(Math.min(...mobileManageMetrics.toolButtonHeights) >= 54.5, `database buttons must retain a safe touch height: ${JSON.stringify(mobileManageMetrics)}`);
       assert.ok(Math.max(...mobileManageMetrics.toolButtonHeights) <= 55.5, `database buttons must free the required form space: ${JSON.stringify(mobileManageMetrics)}`);
-      assert.ok(mobileManageMetrics.formControlGap >= 31, `expanded form must use its space before the save button: ${JSON.stringify(mobileManageMetrics)}`);
-      assert.ok(Math.abs(mobileManageMetrics.nameToGridGap - mobileManageMetrics.inputGridRowGap) <= 1, `form input spacing must stay consistent: ${JSON.stringify(mobileManageMetrics)}`);
-      assert.ok(Math.abs(mobileManageMetrics.formControlGap - mobileManageMetrics.inputGridRowGap - 18) <= 1, `save button spacing must account for the missing label: ${JSON.stringify(mobileManageMetrics)}`);
+      assert.ok(Math.abs(mobileManageMetrics.nameToGridGap - 10) <= 0.5, `name-to-grid spacing must be compact at 10px: ${JSON.stringify(mobileManageMetrics)}`);
+      assert.ok(Math.abs(mobileManageMetrics.inputGridRowGap - 10) <= 0.5, `form grid row spacing must be compact at 10px: ${JSON.stringify(mobileManageMetrics)}`);
+      assert.ok(Math.abs(mobileManageMetrics.formControlGap - 32) <= 0.5, `save button spacing must remain at 32px: ${JSON.stringify(mobileManageMetrics)}`);
       assert.ok(mobileManageMetrics.formBottomSpace <= 18, `expanded form must not leave excessive space below the save button: ${JSON.stringify(mobileManageMetrics)}`);
-      assert.ok(Math.max(...mobileManageMetrics.controlTopSteps) - Math.min(...mobileManageMetrics.controlTopSteps) <= 1, `input rows and save button must be spaced evenly: ${JSON.stringify(mobileManageMetrics)}`);
+      assert.ok(Math.abs(mobileManageMetrics.controlTopSteps[0] - mobileManageMetrics.controlTopSteps[1]) <= 1, `the two compact input steps must stay equal: ${JSON.stringify(mobileManageMetrics)}`);
+      assert.ok(Math.abs(mobileManageMetrics.controlTopSteps[2] - mobileManageMetrics.controlTopSteps[1] - 4) <= 1, `the save-button step must preserve its previous spacing: ${JSON.stringify(mobileManageMetrics)}`);
     }
 
     if (viewport.expectedLayout === 'compact') {

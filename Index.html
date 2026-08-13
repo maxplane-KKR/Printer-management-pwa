@@ -107,7 +107,6 @@
   /* Copyable Text */
   .copyable { cursor: copy; position: relative; font-family: monospace; font-size: 1.1em; color: var(--primary); }
   .copyable:hover { color: var(--accent); font-weight: bold; }
-  .copyable::after { content: '📋'; font-size: 0.8em; margin-left: 5px; opacity: 0; transition: opacity 0.2s; }
   .copyable:hover::after { opacity: 1; }
 
   /* Sorting */
@@ -614,10 +613,10 @@
     .manage-grid {
       grid-template-rows: minmax(0, 1fr) 166px 129px;
     }
-    #printer-form { grid-template-rows: auto auto auto; align-content: start; gap: 14px; }
+    #printer-form { grid-template-rows: auto auto auto; align-content: start; gap: 10px; padding-top: 8px; }
     #mobile-form .form-group label { height: 15px; line-height: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #mobile-form form > div:last-child { margin-top: 18px !important; }
-    .printer-form-grid { row-gap: 14px; }
+    #mobile-form form > div:last-child { margin-top: 22px !important; }
+    .printer-form-grid { row-gap: 10px; }
     #mobile-tools .tool-actions-grid {
       height: auto;
       align-self: center;
@@ -770,8 +769,336 @@
     .container > h1::before { width: 24%; }
   }
 </style>
+<style data-design-system="material-liquid-glass">
+  :root {
+    --md-primary: #1e40af;
+    --md-on-primary: #ffffff;
+    --md-primary-container: #dbeafe;
+    --md-on-primary-container: #172554;
+    --md-secondary: #0e7490;
+    --md-accent: #b45309;
+    --md-info: #075985;
+    --md-info-container: #e0f2fe;
+    --md-canvas: #edf3fc;
+    --md-surface: rgba(255, 255, 255, .68);
+    --md-surface-strong: rgba(249, 251, 255, .88);
+    --md-surface-muted: rgba(225, 234, 248, .72);
+    --md-on-surface: #172033;
+    --md-on-surface-muted: #566176;
+    --md-outline: rgba(77, 91, 119, .24);
+    --md-outline-strong: rgba(77, 91, 119, .42);
+    --md-success: #0b6b58;
+    --md-success-container: #b8f1df;
+    --md-danger: #ad2f38;
+    --md-danger-container: #ffdadd;
+    --md-warning: #855300;
+    --md-warning-container: #ffddb2;
+    --md-focus: #2563eb;
+    --glass-blur: 18px;
+    --radius-window: 24px;
+    --radius-card: 20px;
+    --radius-control: 14px;
+    --elevation-1: 0 8px 24px rgba(44, 58, 86, .10), inset 0 1px 0 rgba(255, 255, 255, .78);
+    --elevation-2: 0 18px 48px rgba(44, 58, 86, .16), inset 0 1px 0 rgba(255, 255, 255, .86);
+    --primary: var(--md-on-surface);
+    --secondary: var(--md-secondary);
+    --accent: var(--md-primary);
+    --success: var(--md-success);
+    --warning: var(--md-warning);
+    --danger: var(--md-danger);
+    --bg-color: var(--md-canvas);
+    --surface: var(--md-surface);
+    --surface-muted: var(--md-surface-muted);
+    --surface-raised: var(--md-surface-strong);
+    --border: var(--md-outline);
+    --text: var(--md-on-surface);
+    --text-muted: var(--md-on-surface-muted);
+    --ink: var(--md-on-surface);
+  }
+
+  html { background: var(--md-canvas); }
+  body {
+    background-color: var(--md-canvas);
+    background-image:
+      radial-gradient(circle at 10% 8%, rgba(56, 189, 248, .22), transparent 34%),
+      radial-gradient(circle at 88% 18%, rgba(45, 212, 191, .18), transparent 30%),
+      radial-gradient(circle at 72% 92%, rgba(251, 191, 36, .15), transparent 34%),
+      linear-gradient(145deg, #f8fafc 0%, #eff6ff 52%, #f0fdfa 100%);
+    background-attachment: fixed;
+    color: var(--md-on-surface);
+  }
+
+  .container > h1,
+  .control-box,
+  .tools-bar,
+  .filter-bar,
+  .table-wrapper,
+  .mobile-tabbar {
+    border: 1px solid rgba(255, 255, 255, .72);
+    background-color: var(--md-surface);
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(145%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(145%);
+    box-shadow: var(--elevation-2);
+  }
+
+  .container > h1 {
+    background-image: linear-gradient(120deg, rgba(255, 255, 255, .68), rgba(224, 242, 254, .72));
+    border-radius: var(--radius-window);
+    color: var(--md-on-surface);
+  }
+  .container > h1::before { opacity: .08; filter: saturate(.7) contrast(1.15); }
+  .container > h1 .header-subtitle { color: var(--md-on-surface-muted) !important; opacity: 1 !important; }
+  .sheet-sync-indicator {
+    border: 1px solid var(--md-outline);
+    background: rgba(248, 250, 255, .76);
+    color: var(--md-on-surface);
+    box-shadow: 0 3px 12px rgba(44, 58, 86, .08);
+  }
+
+  .control-box,
+  .tools-bar,
+  .filter-bar,
+  .table-wrapper { border-radius: var(--radius-card); }
+  .control-box[style] {
+    border: 1px solid rgba(255, 255, 255, .72) !important;
+    background: var(--md-surface) !important;
+  }
+  h2 {
+    color: var(--md-on-surface);
+    border-left-color: var(--md-primary);
+    letter-spacing: 0;
+  }
+  .tools-bar { border-left: 1px solid rgba(255, 255, 255, .72); }
+  .tools-section-title { color: var(--md-on-surface); }
+
+  .table-wrapper { padding: 7px; }
+  .table-container thead {
+    background: rgba(37, 49, 80, .92);
+    color: #f8f9ff;
+  }
+  .table-container th,
+  .table-container td { border-bottom: 1px solid var(--md-outline); }
+  .table-container tbody tr { background: rgba(255, 255, 255, .18); }
+  .table-container tbody tr:nth-child(even) { background: rgba(234, 240, 251, .38); }
+  .table-container tbody tr:hover { background: rgba(219, 234, 254, .62); }
+
+  #mobile-overview .grid-2 > div {
+    border: 1px solid rgba(255, 255, 255, .66) !important;
+    background: rgba(244, 248, 255, .64) !important;
+    box-shadow: var(--elevation-1) !important;
+  }
+  #mobile-overview #stat-total { color: var(--md-primary) !important; }
+  #mobile-overview #stat-offline { color: var(--md-danger) !important; }
+  #mobile-overview .grid-2 > div > div:last-child { color: var(--md-on-surface-muted) !important; }
+
+  .status-badge { border: 1px solid currentColor; box-shadow: none; }
+  .status-online { background: var(--md-success-container); color: var(--md-success); }
+  .status-offline { background: var(--md-danger-container); color: var(--md-danger); }
+  .status-warning { background: var(--md-warning-container); color: var(--md-warning); }
+  .vlan-badge { border: 1px solid var(--md-outline); background: var(--md-surface-muted); color: var(--md-on-surface); box-shadow: none; }
+
+  @media (max-width: 1023px) {
+    .container > h1,
+    .control-box,
+    .tools-bar,
+    .filter-bar,
+    .table-wrapper { box-shadow: var(--elevation-1); }
+    .mobile-tabbar {
+      background-color: rgba(247, 250, 255, .78);
+      border-color: rgba(255, 255, 255, .82);
+      box-shadow: 0 -8px 30px rgba(44, 58, 86, .16), inset 0 1px 0 rgba(255, 255, 255, .88);
+    }
+  }
+</style>
+<style data-design-system="material-liquid-glass-controls">
+  .form-group input,
+  .form-group select,
+  .search-wrapper input,
+  .filter-select {
+    min-height: 44px;
+    border: 1px solid var(--md-outline-strong);
+    border-radius: var(--radius-control);
+    background-color: var(--md-surface-strong);
+    color: var(--md-on-surface);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .88), 0 2px 8px rgba(44, 58, 86, .06);
+  }
+  .form-group input::placeholder,
+  .search-wrapper input::placeholder { color: #6b7589; }
+  .form-group label { color: var(--md-on-surface); font-weight: 600; }
+  .form-group input:focus,
+  .form-group select:focus,
+  .search-wrapper input:focus,
+  .filter-select:focus {
+    border-color: var(--md-primary);
+    outline: 3px solid var(--md-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 6px rgba(37, 99, 235, .16);
+    transform: none;
+  }
+
+  .btn {
+    min-height: 44px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-control);
+    box-shadow: 0 5px 14px rgba(44, 58, 86, .14), inset 0 1px 0 rgba(255, 255, 255, .24);
+    color: var(--md-on-surface);
+    font-weight: 700;
+  }
+  .btn:hover { filter: brightness(.98) saturate(1.04); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0) scale(.98); box-shadow: 0 2px 7px rgba(44, 58, 86, .14); }
+  .btn:focus,
+  .btn:focus-visible,
+  .clear-search-btn:focus,
+  .clear-search-btn:focus-visible,
+  input[type="checkbox"]:focus-visible,
+  .mobile-tab:focus,
+  .mobile-tab:focus-visible {
+    outline: 3px solid var(--md-focus);
+    outline-offset: 3px;
+  }
+
+  #submit-btn,
+  .btn-primary {
+    background-color: var(--md-primary);
+    color: var(--md-on-primary);
+  }
+  #submit-btn:hover,
+  .btn-primary:hover { background-color: #1e3a8a; }
+  .btn-success { background-color: var(--md-success-container); color: var(--md-success); }
+  .btn-sheet { background-color: var(--md-secondary); color: #ffffff; }
+  #export-csv-btn { background-color: var(--md-info-container); color: var(--md-info); }
+  .btn-warning { background-color: var(--md-warning-container); color: var(--md-warning); }
+  .btn-danger { background-color: var(--md-danger-container); color: var(--md-danger); }
+  .btn-secondary { background-color: #dfe5f0; color: #3e485c; }
+  .btn-outline {
+    border-color: var(--md-outline-strong);
+    background-color: rgba(248, 250, 255, .48);
+    color: var(--md-on-surface);
+  }
+  .btn-outline:hover { background-color: var(--md-primary-container); }
+  .pagination-controls .btn:disabled {
+    background-color: rgba(222, 226, 235, .76);
+    color: #7b8496;
+    box-shadow: none;
+    opacity: .72;
+  }
+  .page-info {
+    border: 1px solid var(--md-outline);
+    border-radius: var(--radius-control);
+    background-color: rgba(249, 251, 255, .72);
+    color: var(--md-on-surface);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .82);
+  }
+  .bulk-actions {
+    border: 1px solid rgba(173, 47, 56, .28);
+    border-radius: var(--radius-control);
+    background-color: rgba(255, 218, 221, .76);
+    box-shadow: var(--elevation-1);
+  }
+  .clear-search-btn { color: var(--md-on-surface-muted); border-radius: 50%; }
+  input[type="checkbox"] { accent-color: var(--md-primary); }
+
+  .mobile-tab {
+    border: 1px solid transparent;
+    border-radius: var(--radius-control);
+    color: var(--md-on-surface-muted);
+  }
+  .mobile-tab:hover,
+  .mobile-tab:focus-visible,
+  .mobile-tab[aria-current="page"] {
+    border-color: transparent;
+    background: var(--md-primary-container);
+    color: var(--md-on-primary-container);
+  }
+  .mobile-tab:active { transform: scale(.98); }
+
+  @media (max-width: 480px) {
+    .form-group input,
+    .form-group select,
+    .search-wrapper input,
+    .filter-select { font-size: 16px; }
+  }
+</style>
+<style data-design-system="material-liquid-glass-motion">
+  :root {
+    --motion-duration: 200ms;
+    --motion-easing: cubic-bezier(.2, 0, 0, 1);
+  }
+  .btn {
+    transition-property: background-color, color, box-shadow, transform, filter;
+    transition-duration: var(--motion-duration);
+    transition-timing-function: var(--motion-easing);
+  }
+  .form-group input,
+  .form-group select,
+  .search-wrapper input,
+  .filter-select,
+  .mobile-tab {
+    transition-property: background-color, border-color, box-shadow, color, transform;
+    transition-duration: var(--motion-duration);
+    transition-timing-function: var(--motion-easing);
+  }
+  .table-container tbody tr {
+    transition: background-color var(--motion-duration) var(--motion-easing);
+  }
+  .clear-search-btn {
+    transition: background-color var(--motion-duration) var(--motion-easing), color var(--motion-duration) var(--motion-easing);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      transition-duration: .01ms !important;
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+    }
+    .btn:hover,
+    .btn:active,
+    .mobile-tab:active { transform: none; }
+  }
+</style>
 </head>
 <body>
+<svg class="ui-icon-sprite" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="icon-cloud-upload" viewBox="0 0 24 24">
+      <path d="M16 16l-4-4-4 4M12 12v9"/>
+      <path d="M20.4 17.5A5 5 0 0 0 18 8.2 7 7 0 0 0 4.3 10.5 4.5 4.5 0 0 0 5.5 19H7"/>
+    </symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14"/></symbol>
+    <symbol id="icon-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="m7 9 3 3-3 3m6 0h4"/></symbol>
+    <symbol id="icon-refresh" viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M6.1 8A7 7 0 0 1 18.7 6L20 8m-16 8 1.3 2A7 7 0 0 0 17.9 16"/></symbol>
+    <symbol id="icon-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7m4 4v6m4-6v6"/></symbol>
+    <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M4 20h4l11-11-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></symbol>
+    <symbol id="icon-printer" viewBox="0 0 24 24"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6zM18 12h.01"/></symbol>
+    <symbol id="icon-add" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="icon-list" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M8 9h9M8 15h9M5.5 9h.01M5.5 15h.01"/></symbol>
+    <symbol id="icon-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/></symbol>
+  </defs>
+</svg>
+
+<style data-design-system="material-liquid-glass-icons">
+  .ui-icon-sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+  .ui-icon {
+    width: 1.15em; height: 1.15em; flex: 0 0 auto; fill: none; stroke: currentColor;
+    stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none;
+  }
+  .mobile-tab-icon { display: grid; place-items: center; }
+  .mobile-tab-icon .ui-icon { width: 1.35rem; height: 1.35rem; }
+  .search-leading-icon {
+    position: absolute; z-index: 1; left: 14px; top: 50%; width: 18px; height: 18px;
+    transform: translateY(-50%); color: var(--md-on-surface-muted); pointer-events: none;
+  }
+  .search-wrapper input { padding-left: 42px; }
+  .copyable::after {
+    content: ""; display: inline-block; width: .72em; height: .72em; margin-left: 7px;
+    border: 1.5px solid currentColor; border-radius: 2px; opacity: 0;
+    box-shadow: 3px -3px 0 -1px var(--md-surface-strong), 3px -3px 0 0 currentColor;
+  }
+  .copyable:hover::after { opacity: .72; }
+</style>
 
 <div class="container">
   <h1><span class="header-title">Printer Management Pro</span> <span class="header-subtitle">Enterprise Edition</span><small id="sheet-sync-indicator" class="sheet-sync-indicator" role="status" aria-live="polite">กำลังโหลดข้อมูลล่าสุด...</small></h1>
@@ -822,10 +1149,14 @@
       <div class="tools-bar" id="mobile-tools">
         <div class="tools-section-title">ฐานข้อมูล (Database Tools)</div>
         <div class="tool-actions-grid">
-          <button id="sync-sheet-btn" class="btn btn-sheet btn-sm">☁️ บันทึกลงชีต</button>
-          <button id="export-csv-btn" class="btn btn-success btn-sm">📊 Export CSV</button>
-          <button id="copy-ping-script-btn" class="btn btn-danger btn-sm" title="คัดลอกคำสั่งไปรันบน PowerShell เพื่อเช็คสถานะผ่าน TCP">1. 📋 สคริปต์ TCP</button>
-          <button id="import-ping-results-btn" class="btn btn-success btn-sm" title="นำเข้าผลลัพธ์จาก PowerShell เพื่ออัปเดตตาราง">2. 📥 อัปเดตสถานะ</button>
+          <button id="sync-sheet-btn" class="btn btn-sheet btn-sm">
+            <svg class="ui-icon" aria-hidden="true"><use href="#icon-cloud-upload"></use></svg><span>บันทึกลงชีต</span>
+          </button>
+          <button id="export-csv-btn" class="btn btn-success btn-sm">
+            <svg class="ui-icon" aria-hidden="true"><use href="#icon-download"></use></svg><span>Export CSV</span>
+          </button>
+          <button id="copy-ping-script-btn" class="btn btn-danger btn-sm" title="คัดลอกคำสั่งไปรันบน PowerShell เพื่อเช็คสถานะผ่าน TCP"><svg class="ui-icon" aria-hidden="true"><use href="#icon-terminal"></use></svg><span>1. สคริปต์ TCP</span></button>
+          <button id="import-ping-results-btn" class="btn btn-success btn-sm" title="นำเข้าผลลัพธ์จาก PowerShell เพื่ออัปเดตตาราง"><svg class="ui-icon" aria-hidden="true"><use href="#icon-refresh"></use></svg><span>2. อัปเดตสถานะ</span></button>
         </div>
       </div>
 
@@ -849,7 +1180,8 @@
   <section class="mobile-view-panel" id="mobile-list">
   <div class="filter-bar">
     <div class="search-wrapper">
-      <input type="text" id="search-input" aria-label="ค้นหาเครื่องพิมพ์" placeholder="🔍 ค้นหา ชื่อ, IP, Location...">
+      <svg class="ui-icon search-leading-icon" aria-hidden="true"><use href="#icon-search"></use></svg>
+      <input type="text" id="search-input" aria-label="ค้นหาเครื่องพิมพ์" placeholder="ค้นหา ชื่อ, IP, Location...">
       <button type="button" id="clear-search-btn" class="clear-search-btn" aria-label="ล้างคำค้นหา" style="display: none;">&times;</button>
     </div>
     <select id="filter-location" class="filter-select" aria-label="กรองตามสถานที่"><option value="">-- ทุกสถานที่ (All Locations) --</option></select>
@@ -861,12 +1193,12 @@
       <option value="unknown">Unknown</option>
     </select>
     
-    <button id="reset-filters-btn" class="btn btn-outline" style="min-width: 100px;" title="ล้างตัวกรองและแสดงทั้งหมด">🔄 แสดงทั้งหมด</button>
+    <button id="reset-filters-btn" class="btn btn-outline" style="min-width: 100px;" title="ล้างตัวกรองและแสดงทั้งหมด"><svg class="ui-icon" aria-hidden="true"><use href="#icon-refresh"></use></svg><span>แสดงทั้งหมด</span></button>
   </div>
 
   <div id="bulk-action-bar" class="bulk-actions">
     <span id="selected-count-text">เลือกแล้ว 0 รายการ</span>
-    <button id="bulk-delete-btn" class="btn btn-danger btn-sm">🗑️ ลบรายการที่เลือก</button>
+    <button id="bulk-delete-btn" class="btn btn-danger btn-sm"><svg class="ui-icon" aria-hidden="true"><use href="#icon-trash"></use></svg><span>ลบรายการที่เลือก</span></button>
   </div>
 
   <div class="table-wrapper">
@@ -2373,7 +2705,7 @@ document.addEventListener('DOMContentLoaded', function() {
         <td>
           <div class="mobile-printer-line">
             <a href="http://${p.ip}" target="_blank" class="printer-link" title="เปิดหน้าจัดการ (Web UI)" style="font-weight: 600;">
-              ${p.name} <span class="icon">🌐</span>
+              ${p.name} <svg class="ui-icon icon" aria-hidden="true"><use href="#icon-printer"></use></svg>
             </a>
             <span class="mobile-status-inline">${statusHtml}</span>
           </div>
@@ -2388,8 +2720,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <td style="font-size: 0.9em; color: #555;">${p.note || '-'}</td>
 
         <td style="text-align: center;">
-          <button class="btn btn-warning btn-sm edit-btn" data-id="${p.id}" title="แก้ไข" aria-label="แก้ไข ${p.name}">✏️</button>
-          <button class="btn btn-danger btn-sm delete-btn" data-id="${p.id}" title="ลบ" aria-label="ลบ ${p.name}">🗑️</button>
+          <button class="btn btn-warning btn-sm edit-btn" data-id="${p.id}" title="แก้ไข" aria-label="แก้ไข ${p.name}"><svg class="ui-icon" aria-hidden="true"><use href="#icon-edit"></use></svg></button>
+          <button class="btn btn-danger btn-sm delete-btn" data-id="${p.id}" title="ลบ" aria-label="ลบ ${p.name}"><svg class="ui-icon" aria-hidden="true"><use href="#icon-trash"></use></svg></button>
         </td>
       `;
       fragment.appendChild(tr);
@@ -2949,8 +3281,8 @@ Write-Host "Done! Return to the web dashboard and click 'Import'." -ForegroundCo
 });
 </script>
 <nav class="mobile-tabbar" aria-label="เมนูหลักบนมือถือ">
-  <a class="mobile-tab" data-mobile-view="manage" href="#mobile-manage"><span class="mobile-tab-icon">＋</span><span>จัดการ</span></a>
-  <a class="mobile-tab" data-mobile-view="list" href="#mobile-list"><span class="mobile-tab-icon">▦</span><span>รายการ</span></a>
+  <a class="mobile-tab" data-mobile-view="manage" href="#mobile-manage"><span class="mobile-tab-icon"><svg class="ui-icon" aria-hidden="true"><use href="#icon-add"></use></svg></span><span>จัดการ</span></a>
+  <a class="mobile-tab" data-mobile-view="list" href="#mobile-list"><span class="mobile-tab-icon"><svg class="ui-icon" aria-hidden="true"><use href="#icon-list"></use></svg></span><span>รายการ</span></a>
 </nav>
 </body>
 </html>
