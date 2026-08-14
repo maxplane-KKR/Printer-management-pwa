@@ -20,6 +20,13 @@ assert.match(html, /@media \(max-width: 1024px\)/, 'theme/layout ต้องค
 assert.match(html, /overflow-x:\s*(hidden|clip)/, 'หน้าแอปต้องป้องกัน horizontal overflow');
 assert.match(html, /localStorage\.getItem\(themeStorageKey\)/, 'ต้องอ่าน theme จาก localStorage');
 assert.match(html, /localStorage\.setItem\(themeStorageKey/, 'ต้องบันทึก theme ลง localStorage');
+for (const preset of ['mint', 'neon', 'rose', 'sunset', 'netflix', 'luxury']) {
+  assert.match(html, new RegExp(`data-preset="${preset}"`), `ต้องมี preset ${preset}`);
+}
+assert.match(html, /id="theme-opacity"[^>]+min="40"[^>]+max="100"/, 'opacity ต้อง clamp 40-100');
+assert.match(html, /id="theme-blur"[^>]+min="0"[^>]+max="30"/, 'blur ต้อง clamp 0-30');
+assert.match(html, /id="theme-reset-btn"/, 'ต้องมีปุ่มคืนค่าเริ่มต้น');
+assert.match(html, /prefers-reduced-motion/, 'ต้องรองรับ reduced motion');
 
 const normalizeMatch = html.match(
   /function normalizeThemeState\(input = \{\}\)\s*\{([\s\S]*?)\n\s*\}\s*\/\/ theme-state-end/

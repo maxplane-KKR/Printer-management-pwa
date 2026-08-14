@@ -594,36 +594,61 @@
     :root {
       --compact-card-padding: clamp(4px, 1dvh, 8px);
       --compact-card-gap: clamp(4px, .8dvh, 5px);
+      --compact-row-height: 62px;
     }
     .manage-grid {
-      grid-template-rows: minmax(0, 1.55fr) minmax(0, .9fr) minmax(0, .65fr);
+      grid-template-rows: minmax(284px, 1.9fr) minmax(126px, .85fr) minmax(100px, .65fr);
     }
     .container > h1 { min-height: 58px; padding-block: 8px; font-size: 1.55rem; }
+    #mobile-tools { padding: 2px 5px; }
+    #mobile-tools .tools-section-title { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 32px; }
+    #mobile-tools .theme-launch-btn { min-height: 32px; padding: 3px 5px; font-size: .64rem; }
+    #mobile-tools .tool-actions-grid { grid-template-rows: repeat(2, 40px); gap: 4px; }
+    #mobile-tools .tool-actions-grid .btn { height: 40px; min-height: 40px; padding: 4px 5px; line-height: 1.05; }
+    #main-table tbody td { padding-block: 2px; }
+    #main-table .mobile-status-inline { margin-top: 1px; padding: 0; font-size: .72rem; line-height: 1; }
+    #main-table .mobile-status-inline .status-badge { padding: 1px 4px; border-width: 1px; font-size: .68rem; line-height: 1; }
+    #main-table .mobile-ip-inline { margin-top: 1px; font-size: .82rem; line-height: 1.1; }
+    #main-table .mobile-device-meta { margin-top: 1px; font-size: .68rem; line-height: 1.1; }
+    #mobile-list .table-wrapper { padding: 2px; }
     #mobile-overview { padding: 4px; gap: 4px; }
-    #mobile-overview .grid-2 { height: calc(100% - 4px); align-self: start; }
+    #mobile-overview .grid-2 { height: auto; min-height: 0; align-self: start; grid-template-rows: minmax(0, 1fr); }
     #mobile-overview .grid-2 > div {
+      height: 100%;
+      min-height: 0;
+      padding: 4px !important;
       box-shadow: 2px 2px 0 rgba(32, 37, 43, .94), inset 2px 2px 0 rgba(255,255,255,.72), inset -3px -3px 8px rgba(32,37,43,.08) !important;
     }
-    #mobile-overview #stat-total, #mobile-overview #stat-offline { font-size: clamp(2rem, 4.4vw, 2.8rem) !important; }
+    #mobile-overview #stat-total, #mobile-overview #stat-offline { font-size: clamp(1.5rem, 3.8vw, 2.2rem) !important; }
+    #mobile-overview .grid-2 > div > div:last-child { font-size: clamp(.78rem, 1.7vw, 1rem) !important; line-height: 1.1; }
     .tool-actions-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    #mobile-tools .tool-actions-grid { grid-template-rows: repeat(2, minmax(44px, 1fr)); }
+    #mobile-tools .tool-actions-grid { grid-template-rows: repeat(2, 40px); }
   }
 
   @media (max-width: 480px) and (min-height: 600px) and (max-height: 800px) {
     .manage-grid {
       grid-template-rows: minmax(296px, 1.65fr) minmax(126px, .75fr) minmax(109px, .6fr);
     }
+    #mobile-tools { padding: 2px 5px; }
+    #mobile-tools .tools-section-title { display: flex; align-items: center; justify-content: space-between; gap: 6px; min-height: 28px; }
+    #mobile-tools .theme-launch-btn { min-height: 28px; padding: 3px 5px; font-size: .62rem; }
     #mobile-tools .tool-actions-grid {
       height: auto;
       align-self: center;
-      grid-template-rows: repeat(2, 44px);
+      grid-template-rows: repeat(2, 40px);
+      gap: 4px;
     }
     #mobile-tools .tool-actions-grid .btn {
-      height: 44px;
-      min-height: 44px;
+      height: 40px;
+      min-height: 40px;
       padding: 4px 5px;
       line-height: 1.05;
     }
+    #mobile-tools .tools-section-title { line-height: 1; }
+  }
+
+  @media (max-width: 520px) {
+    #mobile-list .table-wrapper { padding: 2px; }
   }
 
   @media (max-height: 540px) and (max-width: 1024px) {
@@ -833,12 +858,12 @@
 
   .theme-mode-toggle { position: absolute; z-index: 3; right: clamp(16px, 3vw, 34px); bottom: 16px; display: inline-flex; gap: 3px; padding: 3px; border: 1px solid rgba(23,27,33,.38); border-radius: 999px; background: rgba(255,255,255,.34); }
   .theme-mode-btn { min-width: 52px; min-height: 44px; padding: 5px 9px; border: 0; border-radius: 999px; color: rgba(23,27,33,.68); background: transparent; font: 700 .72rem/1 'Sarabun', sans-serif; cursor: pointer; }
-  .theme-mode-btn[aria-pressed="true"] { color: #231b0e; background: var(--yellow); }
+  .theme-mode-btn[aria-pressed="true"] { color: #231b0e; background: var(--theme-accent, var(--yellow)); }
   .theme-mode-btn:focus-visible, .theme-preset:focus-visible, .theme-launch-btn:focus-visible, .theme-dialog-close:focus-visible, .theme-range-field input:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
   .theme-launch-btn { min-height: 44px; margin-left: auto; padding: 6px 10px; border: 1px solid currentColor; border-radius: 9px; color: inherit; background: transparent; font: 700 .72rem/1 'Sarabun', sans-serif; cursor: pointer; }
-  body[data-surface="dark"] .theme-launch-btn { color: var(--yellow); }
+  body[data-surface="dark"] .theme-launch-btn { color: var(--theme-accent, var(--yellow)); }
 
-  .theme-studio-dialog { width: min(640px, calc(100vw - 24px)); max-width: 640px; max-height: min(780px, calc(100dvh - 24px)); padding: 0; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); color: var(--text); box-shadow: 0 24px 70px rgba(0,0,0,.45); }
+  .theme-studio-dialog { width: min(640px, calc(100vw - 24px)); max-width: 640px; max-height: min(780px, calc(100dvh - 24px)); padding: 0; border: 1px solid var(--border); border-top: 4px solid var(--theme-accent, var(--yellow)); border-radius: 18px; background: var(--surface); color: var(--text); box-shadow: 0 24px 70px rgba(0,0,0,.45); }
   .theme-studio-dialog::backdrop { background: rgba(3,8,16,.68); backdrop-filter: blur(4px); }
   body[data-surface="light"] .theme-studio-dialog { --surface: rgba(255,255,255,.96); --text: #172033; --border: rgba(72,91,117,.26); }
   .theme-studio-dialog__inner { display: grid; gap: 14px; padding: clamp(16px, 3vw, 24px); overflow: auto; }
@@ -846,10 +871,10 @@
   .theme-studio-dialog h2 { margin: 0; border: 0; padding: 0; color: inherit; font-size: 1.2rem; }
   .theme-studio-dialog p { margin: 3px 0 0; color: var(--text-muted); font-size: .78rem; }
   .theme-dialog-close { min-height: 44px; padding: 7px 11px; border: 1px solid var(--border); border-radius: 9px; color: inherit; background: transparent; font: 700 .72rem/1 'Sarabun', sans-serif; cursor: pointer; }
-  .theme-surface-label { color: var(--yellow); font-size: .78rem; font-weight: 800; }
+  .theme-surface-label { color: var(--theme-accent, var(--yellow)); font-size: .78rem; font-weight: 800; }
   .theme-preset-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
   .theme-preset { min-width: 0; min-height: 48px; padding: 7px 4px; border: 1px solid rgba(255,255,255,.28); border-radius: 10px; color: #fff; font: 700 .67rem/1 'Sarabun', sans-serif; cursor: pointer; }
-  .theme-preset[aria-pressed="true"] { outline: 2px solid var(--yellow); outline-offset: 2px; }
+  .theme-preset[aria-pressed="true"] { outline: 2px solid var(--theme-accent, var(--yellow)); outline-offset: 2px; }
   .theme-preset-mint { background: linear-gradient(135deg,#19c3a3,#0e7490); }
   .theme-preset-neon { background: linear-gradient(135deg,#39e083,#2671e9); }
   .theme-preset-rose { background: linear-gradient(135deg,#f47691,#c43f64); }
@@ -859,7 +884,7 @@
   .theme-range-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .theme-range-field { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; color: var(--text-muted); font-size: .74rem; }
   .theme-range-field output { color: var(--text); font-weight: 800; }
-  .theme-range-field input { grid-column: 1 / -1; width: 100%; accent-color: var(--yellow); }
+  .theme-range-field input { grid-column: 1 / -1; width: 100%; accent-color: var(--theme-accent, var(--yellow)); }
   @media (max-width: 1024px) {
     .container > h1 { padding-right: clamp(15px, 3vw, 24px); }
     .theme-mode-toggle { position: static; align-self: flex-start; margin-top: 8px; }
@@ -2343,6 +2368,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const surface = themeState.surface;
     document.documentElement.dataset.surface = surface;
     document.body.dataset.surface = surface;
+    document.body.dataset.themePreset = themeState.preset;
     const token = themePresetTokens[themeState.preset];
     document.documentElement.style.setProperty('--theme-accent', token.accent);
     document.documentElement.style.setProperty('--theme-accent-strong', token.accentStrong);
@@ -2357,9 +2383,9 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     if (themeSurfaceLabel) themeSurfaceLabel.textContent = surface === 'light' ? 'Light Glass' : 'Dark Glass';
     if (themeOpacity) themeOpacity.value = String(themeState.opacity);
-    if (themeOpacityValue) themeOpacityValue.value = `${themeState.opacity}%`;
+    if (themeOpacityValue) themeOpacityValue.textContent = `${themeState.opacity}%`;
     if (themeBlur) themeBlur.value = String(themeState.blur);
-    if (themeBlurValue) themeBlurValue.value = `${themeState.blur}px`;
+    if (themeBlurValue) themeBlurValue.textContent = `${themeState.blur}px`;
   }
 
   function loadThemeState() {
@@ -2387,16 +2413,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.querySelectorAll('.theme-preset').forEach(button => {
       button.addEventListener('click', () => {
-        applyThemeState({ ...themeState, preset: button.dataset.preset });
+        const currentSurface = document.body?.dataset.surface === 'light' ? 'light' : 'dark';
+        applyThemeState({ ...themeState, surface: currentSurface, preset: button.dataset.preset });
         saveThemeState();
       });
     });
     themeOpacity?.addEventListener('input', event => {
-      applyThemeState({ ...themeState, opacity: event.target.value });
+      const currentSurface = document.body?.dataset.surface === 'light' ? 'light' : 'dark';
+      applyThemeState({ ...themeState, surface: currentSurface, opacity: event.target.value });
       saveThemeState();
     });
     themeBlur?.addEventListener('input', event => {
-      applyThemeState({ ...themeState, blur: event.target.value });
+      const currentSurface = document.body?.dataset.surface === 'light' ? 'light' : 'dark';
+      applyThemeState({ ...themeState, surface: currentSurface, blur: event.target.value });
       saveThemeState();
     });
     document.getElementById('theme-reset-btn')?.addEventListener('click', () => {
