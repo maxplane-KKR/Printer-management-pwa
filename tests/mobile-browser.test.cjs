@@ -226,7 +226,7 @@ function waitForSheetRead(previousCount, timeoutMs = 2000) {
     { width: 430, height: 932 },
     { width: 820, height: 1180 },
     { width: 812, height: 375 },
-    { width: 1024, height: 768 }
+    { width: 1023, height: 768 }
   ]) {
     await page.setViewportSize(viewport);
     await page.waitForFunction(() => document.body.dataset.layout === 'compact' && document.querySelector('#submit-btn')?.getBoundingClientRect().height >= 44);

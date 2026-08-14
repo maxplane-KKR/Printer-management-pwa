@@ -16,6 +16,7 @@ const isDesktopScreen = new Function('document', 'window', desktopFunctionBody);
 const viewportCases = [
   { viewportWidth: 320, screenWidth: 1920, screenHeight: 1080, expected: false },
   { viewportWidth: 768, screenWidth: 1366, screenHeight: 768, expected: false },
+  { viewportWidth: 1023, screenWidth: 1920, screenHeight: 1080, expected: false },
   { viewportWidth: 1024, screenWidth: 1920, screenHeight: 1080, expected: false },
   { viewportWidth: 1025, clientWidth: 1010, screenWidth: 1366, screenHeight: 768, expected: true },
   { viewportWidth: 1025, screenWidth: 1366, screenHeight: 768, expected: true },
