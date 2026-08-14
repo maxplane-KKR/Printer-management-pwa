@@ -53,7 +53,7 @@ Preset ที่ผู้ใช้เลือกได้:
 ## พฤติกรรม Theme Studio
 
 1. ผู้ใช้เลือก preset จาก swatch ที่มีชื่อ/คำอธิบายและ `aria-pressed`
-2. ผู้ใช้สลับ `Dark Glass` / `Light Glass`
+2. ผู้ใช้สลับ `Dark Glass` / `Light Glass` ผ่าน segmented toggle ที่มีปุ่ม `Dark` และ `Light` ชัดเจนใน Theme Studio พร้อม `aria-pressed` และ focus-visible
 3. ผู้ใช้ปรับ opacity ในช่วง `40–100` และ blur ในช่วง `0–30px`
 4. ทุกการเปลี่ยนแปลงอัปเดต preview ทันทีโดยไม่ reload หน้า
 5. ปุ่ม `บันทึก` เขียนค่าที่ผ่านการ clamp และ validate ลง `localStorage`
@@ -109,6 +109,7 @@ themeState
 ## เกณฑ์ยอมรับ
 
 - ผู้ใช้เห็น Theme Studio และปรับ preset, surface, opacity, blur ได้โดยไม่ reload
+- ปุ่ม Dark/Light เปลี่ยนพื้นผิวและสีข้อความของการ์ดทันที โดยยังอ่านได้ตามเกณฑ์ contrast
 - ค่า default และ persistence ตรงกับแม่แบบ `CARD-THEME-CONFIG.md`
 - UI ใช้งานได้บน desktop, iPad และมือถือโดยไม่มีการ์ดชน/ล้น/ปุ่มถูกตัด
 - สถานะ sync, header watermark และข้อมูลรายการเดิมยังอยู่ครบ
