@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th" data-api-url="/api/printers">
+<html lang="th" data-api-url="/api/printers" data-surface="dark">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -751,11 +751,135 @@
     .container > h1::before { width: 24%; }
   }
 </style>
+<style data-theme-studio="a">
+  body[data-surface="dark"] {
+    --primary: #e8f0fb;
+    --secondary: #cbd8e8;
+    --accent: #87c7ee;
+    --success: #22c55e;
+    --warning: #f4b739;
+    --danger: #f27676;
+    --bg-color: #090d14;
+    --surface: rgba(17, 27, 42, .92);
+    --surface-muted: rgba(28, 42, 63, .74);
+    --surface-raised: rgba(8, 15, 27, .74);
+    --border: rgba(172, 194, 220, .28);
+    --text: #eef5ff;
+    --text-muted: #9fb1c8;
+    --ink: #e5edf6;
+    --blue: #87c7ee;
+    --yellow: #f4b739;
+    --coral: #f27676;
+    --mint: #22c55e;
+    --clay-shadow: 0 14px 30px rgba(0,0,0,.24);
+    --clay-shadow-small: 0 8px 16px rgba(0,0,0,.2);
+    --clay-inset: inset 0 1px 0 rgba(255,255,255,.08);
+    background: radial-gradient(circle at 88% 0%, rgba(244,183,57,.15), transparent 28%), #090d14;
+    color: var(--text);
+  }
+  body[data-surface="light"] {
+    background: linear-gradient(135deg, #f2eee4 0%, #f7f3ea 48%, #e8f1f3 100%);
+    color: var(--text);
+  }
+  body[data-surface="dark"] .container > h1 {
+    background: linear-gradient(110deg, rgba(244,183,57,.98), rgba(214,119,37,.92));
+    color: #171b21;
+    border-color: #171b21;
+    box-shadow: 0 10px 0 rgba(0,0,0,.7), inset 2px 2px 0 rgba(255,255,255,.3);
+  }
+  body[data-surface="dark"] .container > h1 .header-title,
+  body[data-surface="dark"] .container > h1 .header-subtitle { color: #171b21 !important; opacity: 1; }
+  body[data-surface="dark"] .container > h1 .header-subtitle { opacity: .72; }
+  body[data-surface="dark"] .control-box,
+  body[data-surface="dark"] .tools-bar,
+  body[data-surface="dark"] .filter-bar,
+  body[data-surface="dark"] .table-wrapper,
+  body[data-surface="dark"] .bulk-actions {
+    background: var(--surface) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+    box-shadow: var(--clay-shadow) !important;
+  }
+  body[data-surface="dark"] .control-box h2,
+  body[data-surface="dark"] .tools-section-title,
+  body[data-surface="dark"] .form-group label,
+  body[data-surface="dark"] .page-info { color: var(--text) !important; }
+  body[data-surface="dark"] .tools-section-title { border-color: var(--yellow); }
+  body[data-surface="dark"] .form-group input,
+  body[data-surface="dark"] .form-group select,
+  body[data-surface="dark"] .search-wrapper input,
+  body[data-surface="dark"] .filter-select,
+  body[data-surface="dark"] #rows-per-page {
+    background: var(--surface-raised) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+    box-shadow: var(--clay-inset) !important;
+  }
+  body[data-surface="dark"] input::placeholder { color: #8fa2b9; }
+  body[data-surface="dark"] #mobile-overview .grid-2 > div { background: var(--surface-raised) !important; color: var(--text); }
+  body[data-surface="dark"] #mobile-overview .grid-2 > div > div:last-child { color: var(--text-muted) !important; }
+  body[data-surface="dark"] .table-container { color: var(--text); }
+  body[data-surface="dark"] .table-container thead { background: #172235; color: #f8fbff; }
+  body[data-surface="dark"] .table-container tbody tr:hover { background: rgba(135,199,238,.1); }
+  body[data-surface="dark"] .table-container td { border-color: rgba(172,194,220,.16); }
+  body[data-surface="dark"] .printer-link,
+  body[data-surface="dark"] .copyable { color: #d7e9fb; }
+  body[data-surface="dark"] .status-online { background: rgba(34,197,94,.2); color: #8df2b2; }
+  body[data-surface="dark"] .status-offline { background: rgba(242,118,118,.2); color: #ffb5b5; }
+  body[data-surface="dark"] .status-warning { background: rgba(244,183,57,.2); color: #ffe2a0; }
+  body[data-surface="dark"] .mobile-tabbar { background: rgba(9,13,20,.94); border-color: var(--border); box-shadow: 0 -5px 0 rgba(0,0,0,.7); }
+  body[data-surface="dark"] .mobile-tab { color: var(--text); }
+  body[data-surface="dark"] .mobile-tab[aria-current="page"] { background: var(--yellow); border-color: #171b21; color: #171b21; }
+
+  .theme-mode-toggle { position: absolute; z-index: 3; right: clamp(16px, 3vw, 34px); bottom: 16px; display: inline-flex; gap: 3px; padding: 3px; border: 1px solid rgba(23,27,33,.38); border-radius: 999px; background: rgba(255,255,255,.34); }
+  .theme-mode-btn { min-width: 52px; min-height: 44px; padding: 5px 9px; border: 0; border-radius: 999px; color: rgba(23,27,33,.68); background: transparent; font: 700 .72rem/1 'Sarabun', sans-serif; cursor: pointer; }
+  .theme-mode-btn[aria-pressed="true"] { color: #231b0e; background: var(--yellow); }
+  .theme-mode-btn:focus-visible, .theme-preset:focus-visible, .theme-launch-btn:focus-visible, .theme-dialog-close:focus-visible, .theme-range-field input:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+  .theme-launch-btn { min-height: 44px; margin-left: auto; padding: 6px 10px; border: 1px solid currentColor; border-radius: 9px; color: inherit; background: transparent; font: 700 .72rem/1 'Sarabun', sans-serif; cursor: pointer; }
+  body[data-surface="dark"] .theme-launch-btn { color: var(--yellow); }
+
+  .theme-studio-dialog { width: min(640px, calc(100vw - 24px)); max-width: 640px; max-height: min(780px, calc(100dvh - 24px)); padding: 0; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); color: var(--text); box-shadow: 0 24px 70px rgba(0,0,0,.45); }
+  .theme-studio-dialog::backdrop { background: rgba(3,8,16,.68); backdrop-filter: blur(4px); }
+  body[data-surface="light"] .theme-studio-dialog { --surface: rgba(255,255,255,.96); --text: #172033; --border: rgba(72,91,117,.26); }
+  .theme-studio-dialog__inner { display: grid; gap: 14px; padding: clamp(16px, 3vw, 24px); overflow: auto; }
+  .theme-studio-dialog__head, .theme-studio-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .theme-studio-dialog h2 { margin: 0; border: 0; padding: 0; color: inherit; font-size: 1.2rem; }
+  .theme-studio-dialog p { margin: 3px 0 0; color: var(--text-muted); font-size: .78rem; }
+  .theme-dialog-close { min-height: 44px; padding: 7px 11px; border: 1px solid var(--border); border-radius: 9px; color: inherit; background: transparent; font: 700 .72rem/1 'Sarabun', sans-serif; cursor: pointer; }
+  .theme-surface-label { color: var(--yellow); font-size: .78rem; font-weight: 800; }
+  .theme-preset-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+  .theme-preset { min-width: 0; min-height: 48px; padding: 7px 4px; border: 1px solid rgba(255,255,255,.28); border-radius: 10px; color: #fff; font: 700 .67rem/1 'Sarabun', sans-serif; cursor: pointer; }
+  .theme-preset[aria-pressed="true"] { outline: 2px solid var(--yellow); outline-offset: 2px; }
+  .theme-preset-mint { background: linear-gradient(135deg,#19c3a3,#0e7490); }
+  .theme-preset-neon { background: linear-gradient(135deg,#39e083,#2671e9); }
+  .theme-preset-rose { background: linear-gradient(135deg,#f47691,#c43f64); }
+  .theme-preset-sunset { background: linear-gradient(135deg,#f97316,#facc15); }
+  .theme-preset-netflix { background: linear-gradient(135deg,#3e0b11,#e50914); }
+  .theme-preset-luxury { background: linear-gradient(135deg,#f4b739,#705318); }
+  .theme-range-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .theme-range-field { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; color: var(--text-muted); font-size: .74rem; }
+  .theme-range-field output { color: var(--text); font-weight: 800; }
+  .theme-range-field input { grid-column: 1 / -1; width: 100%; accent-color: var(--yellow); }
+  @media (max-width: 1024px) {
+    .container > h1 { padding-right: clamp(15px, 3vw, 24px); }
+    .theme-mode-toggle { position: static; align-self: flex-start; margin-top: 8px; }
+    .theme-launch-btn { font-size: .68rem; }
+  }
+  @media (max-width: 520px) {
+    .theme-preset-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .theme-range-grid { grid-template-columns: 1fr; }
+    .theme-studio-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+    .theme-studio-dialog__head { align-items: flex-start; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .theme-mode-btn, .theme-preset, .theme-launch-btn, .theme-dialog-close { transition: none !important; }
+  }
+</style>
 </head>
-<body>
+<body data-surface="dark">
 
 <div class="container">
-  <h1><span class="header-title">Printer Management Pro</span> <span class="header-subtitle">Enterprise Edition</span><small id="sheet-sync-indicator" class="sheet-sync-indicator" role="status" aria-live="polite">กำลังโหลดข้อมูลล่าสุด...</small></h1>
+  <h1><span class="header-title">Printer Management Pro</span> <span class="header-subtitle">Enterprise Edition</span><small id="sheet-sync-indicator" class="sheet-sync-indicator" role="status" aria-live="polite">กำลังโหลดข้อมูลล่าสุด...</small><span id="theme-mode-toggle" class="theme-mode-toggle" role="group" aria-label="สลับโหมดพื้นผิว"><button id="theme-dark-btn" type="button" class="theme-mode-btn" data-surface="dark" aria-pressed="true">Dark</button><button id="theme-light-btn" type="button" class="theme-mode-btn" data-surface="light" aria-pressed="false">Light</button></span></h1>
   
   <section class="mobile-view-panel" id="mobile-manage">
   <div class="manage-grid">
@@ -801,7 +925,7 @@
     <!-- System Tools Section -->
     <div>
       <div class="tools-bar" id="mobile-tools">
-        <div class="tools-section-title">ฐานข้อมูล (Database Tools)</div>
+        <div class="tools-section-title"><span>ฐานข้อมูล (Database Tools)</span><button type="button" id="theme-studio-open-btn" class="theme-launch-btn" aria-haspopup="dialog" aria-controls="theme-studio">Theme Studio</button></div>
         <div class="tool-actions-grid">
           <button id="sync-sheet-btn" class="btn btn-sheet btn-sm">☁️ บันทึกลงชีต</button>
           <button id="export-csv-btn" class="btn btn-success btn-sm">📊 Export CSV</button>
@@ -826,6 +950,34 @@
     </div>
   </div>
   </section>
+
+  <dialog id="theme-studio" class="theme-studio-dialog" data-theme-storage-key="printerThemeSettings" aria-labelledby="theme-studio-title">
+    <div class="theme-studio-dialog__inner">
+      <div class="theme-studio-dialog__head">
+        <div>
+          <h2 id="theme-studio-title">Theme Studio</h2>
+          <p>ปรับสไตล์การ์ดโดยไม่กระทบข้อมูลเครื่องพิมพ์</p>
+        </div>
+        <button type="button" id="theme-studio-close-btn" class="theme-dialog-close" aria-label="ปิด Theme Studio">ปิด</button>
+      </div>
+      <div class="theme-studio-toolbar">
+        <span id="theme-surface-label" class="theme-surface-label">Dark Glass</span>
+        <button type="button" id="theme-reset-btn" class="btn btn-outline btn-sm">คืนค่าเริ่มต้น</button>
+      </div>
+      <div class="theme-preset-grid" role="group" aria-label="เลือก preset ธีม">
+        <button type="button" class="theme-preset theme-preset-mint" data-preset="mint" aria-pressed="false">Mint</button>
+        <button type="button" class="theme-preset theme-preset-neon" data-preset="neon" aria-pressed="false">Neon</button>
+        <button type="button" class="theme-preset theme-preset-rose" data-preset="rose" aria-pressed="false">Rose</button>
+        <button type="button" class="theme-preset theme-preset-sunset" data-preset="sunset" aria-pressed="false">Sunset</button>
+        <button type="button" class="theme-preset theme-preset-netflix" data-preset="netflix" aria-pressed="true">Netflix</button>
+        <button type="button" class="theme-preset theme-preset-luxury" data-preset="luxury" aria-pressed="false">Luxury</button>
+      </div>
+      <div class="theme-range-grid">
+        <label class="theme-range-field" for="theme-opacity"><span>Opacity</span><output id="theme-opacity-value" for="theme-opacity">88%</output><input id="theme-opacity" type="range" min="40" max="100" step="1" value="88"></label>
+        <label class="theme-range-field" for="theme-blur"><span>Blur</span><output id="theme-blur-value" for="theme-blur">12px</output><input id="theme-blur" type="range" min="0" max="30" step="1" value="12"></label>
+      </div>
+    </div>
+  </dialog>
 
   <section class="mobile-view-panel" id="mobile-list">
   <div class="filter-bar">
@@ -2135,10 +2287,26 @@ document.addEventListener('DOMContentLoaded', function() {
   let filteredPrinters = [];
   let currentSort = { key: 'ip', direction: 'asc' };
   let currentPage = 1;
-  let compactRowsPerPage = 5;
+  const COMPACT_MIN_ROWS = 4;
+  let compactRowsPerPage = COMPACT_MIN_ROWS;
   let compactLayoutFrame = null;
   let editingId = null;
   let selectedIds = new Set();
+  const themeStorageKey = document.getElementById('theme-studio')?.dataset.themeStorageKey || 'printerThemeSettings';
+
+  function normalizeThemeState(input = {}) {
+    const source = input && typeof input === 'object' ? input : {};
+    const presets = ['mint', 'neon', 'rose', 'sunset', 'netflix', 'luxury'];
+    const preset = presets.includes(source.preset) ? source.preset : 'netflix';
+    const surface = source.surface === 'light' ? 'light' : 'dark';
+    const opacityValue = Number(source.opacity);
+    const blurValue = Number(source.blur);
+    const opacity = Math.min(100, Math.max(40, Number.isFinite(opacityValue) ? opacityValue : 88));
+    const blur = Math.min(30, Math.max(0, Number.isFinite(blurValue) ? blurValue : 12));
+    return { preset, surface, opacity, blur, customImage: null };
+  }
+  // theme-state-end
+  let themeState = normalizeThemeState();
 
   // --- DOM Elements ---
   const form = document.getElementById('printer-form');
@@ -2152,6 +2320,102 @@ document.addEventListener('DOMContentLoaded', function() {
   const selectedCountText = document.getElementById('selected-count-text');
   const rowsPerPageSelect = document.getElementById('rows-per-page');
   const resetFiltersBtn = document.getElementById('reset-filters-btn');
+  const themeStudio = document.getElementById('theme-studio');
+  const themeStudioOpenBtn = document.getElementById('theme-studio-open-btn');
+  const themeStudioCloseBtn = document.getElementById('theme-studio-close-btn');
+  const themeSurfaceLabel = document.getElementById('theme-surface-label');
+  const themeOpacity = document.getElementById('theme-opacity');
+  const themeOpacityValue = document.getElementById('theme-opacity-value');
+  const themeBlur = document.getElementById('theme-blur');
+  const themeBlurValue = document.getElementById('theme-blur-value');
+
+  const themePresetTokens = {
+    mint: { accent: '#19c3a3', accentStrong: '#0e7490' },
+    neon: { accent: '#39e083', accentStrong: '#2671e9' },
+    rose: { accent: '#f47691', accentStrong: '#c43f64' },
+    sunset: { accent: '#f97316', accentStrong: '#facc15' },
+    netflix: { accent: '#e50914', accentStrong: '#3e0b11' },
+    luxury: { accent: '#f4b739', accentStrong: '#705318' }
+  };
+
+  function applyThemeState(next) {
+    themeState = normalizeThemeState(next);
+    const surface = themeState.surface;
+    document.documentElement.dataset.surface = surface;
+    document.body.dataset.surface = surface;
+    const token = themePresetTokens[themeState.preset];
+    document.documentElement.style.setProperty('--theme-accent', token.accent);
+    document.documentElement.style.setProperty('--theme-accent-strong', token.accentStrong);
+    document.documentElement.style.setProperty('--theme-opacity', `${themeState.opacity}%`);
+    document.documentElement.style.setProperty('--theme-blur', `${themeState.blur}px`);
+
+    document.querySelectorAll('#theme-mode-toggle .theme-mode-btn').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.surface === surface));
+    });
+    document.querySelectorAll('.theme-preset').forEach(button => {
+      button.setAttribute('aria-pressed', String(button.dataset.preset === themeState.preset));
+    });
+    if (themeSurfaceLabel) themeSurfaceLabel.textContent = surface === 'light' ? 'Light Glass' : 'Dark Glass';
+    if (themeOpacity) themeOpacity.value = String(themeState.opacity);
+    if (themeOpacityValue) themeOpacityValue.value = `${themeState.opacity}%`;
+    if (themeBlur) themeBlur.value = String(themeState.blur);
+    if (themeBlurValue) themeBlurValue.value = `${themeState.blur}px`;
+  }
+
+  function loadThemeState() {
+    const saved = localStorage.getItem(themeStorageKey);
+    if (!saved) return normalizeThemeState();
+    try {
+      return normalizeThemeState(JSON.parse(saved));
+    } catch (error) {
+      console.warn('Theme settings are invalid; restoring defaults.', error);
+      return normalizeThemeState();
+    }
+  }
+
+  function saveThemeState() {
+    localStorage.setItem(themeStorageKey, JSON.stringify(themeState));
+  }
+
+  function bindThemeStudio() {
+    applyThemeState(loadThemeState());
+    document.querySelectorAll('#theme-mode-toggle .theme-mode-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        applyThemeState({ ...themeState, surface: button.dataset.surface });
+        saveThemeState();
+      });
+    });
+    document.querySelectorAll('.theme-preset').forEach(button => {
+      button.addEventListener('click', () => {
+        applyThemeState({ ...themeState, preset: button.dataset.preset });
+        saveThemeState();
+      });
+    });
+    themeOpacity?.addEventListener('input', event => {
+      applyThemeState({ ...themeState, opacity: event.target.value });
+      saveThemeState();
+    });
+    themeBlur?.addEventListener('input', event => {
+      applyThemeState({ ...themeState, blur: event.target.value });
+      saveThemeState();
+    });
+    document.getElementById('theme-reset-btn')?.addEventListener('click', () => {
+      applyThemeState(normalizeThemeState());
+      saveThemeState();
+    });
+    themeStudioOpenBtn?.addEventListener('click', () => {
+      if (typeof themeStudio?.showModal === 'function') themeStudio.showModal();
+      else themeStudio?.setAttribute('open', '');
+    });
+    themeStudioCloseBtn?.addEventListener('click', () => {
+      if (typeof themeStudio?.close === 'function') themeStudio.close();
+      else themeStudio?.removeAttribute('open');
+    });
+    themeStudio?.addEventListener('click', event => {
+      if (event.target === themeStudio) themeStudio.close?.();
+    });
+  }
+  bindThemeStudio();
   
   // --- Core Functions ---
   
@@ -2424,7 +2688,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const tableWrapper = document.querySelector('#mobile-list .table-wrapper');
     if (!tableWrapper || tableWrapper.clientHeight <= 42) return compactRowsPerPage;
     const rowHeight = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--compact-row-height')) || 72;
-    return Math.max(1, Math.floor((tableWrapper.clientHeight - 42) / rowHeight));
+    const visibleRows = Math.max(COMPACT_MIN_ROWS, Math.floor((tableWrapper.clientHeight - 42) / rowHeight));
+    return filteredPrinters.length >= COMPACT_MIN_ROWS
+      ? visibleRows
+      : Math.max(1, Math.min(filteredPrinters.length || 1, visibleRows));
   }
 
   function getActiveRowsPerPage() {
