@@ -6,8 +6,14 @@ const html = fs.readFileSync(path.join(__dirname, '..', 'Index.html'), 'utf8');
 
 assert.match(html, /id="theme-studio"/, 'ต้องมี Theme Studio panel');
 assert.match(html, /id="theme-mode-toggle"/, 'ต้องมีปุ่มสลับโหมด');
-assert.match(html, /id="theme-dark-btn"/, 'ต้องมีปุ่ม Dark');
-assert.match(html, /id="theme-light-btn"/, 'ต้องมีปุ่ม Light');
+assert.match(html, /id="theme-toggle-btn"/, 'ต้องมีปุ่มสลับธีม');
+assert.match(html, /id="theme-studio-header-btn"/, 'ต้องมีปุ่มเปิด Theme Studio ใน header/mobile view');
+assert.equal((html.match(/data-theme-studio-open="true"/g) || []).length, 1, 'ต้องมี trigger เปิด Theme Studio เพียงจุดเดียวใน header');
+assert.doesNotMatch(html, /id="theme-studio-open-btn"/, 'การ์ดเครื่องมือไม่ควรมีปุ่มธีมซ้ำกับ header');
+assert.match(html, /\.sheet-sync-indicator\s*\{\s*right:\s*14px !important;/, 'ข้อความสถานะต้องชิดมุมขวาของ header ทุก format');
+assert.doesNotMatch(html, /เพิ่มเครื่องพิมพ์ใหม่ \(Add New Printer\)/, 'หัวข้อฟอร์ม compact ไม่ควรพ่วงข้อความภาษาอังกฤษ');
+assert.match(html, /class="theme-mode-icon(?:\s|\")/, 'สวิตช์ธีมต้องใช้ไอคอนแบบกระชับ');
+assert.match(html, /aria-label="สลับเป็นโหมดสว่าง"/, 'ปุ่มธีมต้องมี accessible label');
 assert.match(html, /data-theme-storage-key="printerThemeSettings"/, 'ต้องระบุ storage key ของธีม');
 assert.match(html, /aria-label="สลับโหมดพื้นผิว"/, 'toggle ต้องมี accessible label');
 assert.match(html, /function normalizeThemeState\(/, 'ต้องมีตัว normalize theme state');
