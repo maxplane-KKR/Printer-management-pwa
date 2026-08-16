@@ -1,7 +1,7 @@
 const CACHE_NAME = 'printer-management-shell-v2';
 const APP_SHELL = [
   '/',
-  '/Index.html',
+  '/index.html',
   '/manifest.webmanifest',
   '/assets/icons/icon-any-192-v3.png',
   '/assets/icons/icon-any-512-v3.png'

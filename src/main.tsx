@@ -6,6 +6,10 @@ import '@fontsource/ibm-plex-sans-thai/600.css';
 import './styles/globals.css';
 import { App } from './app/App';
 
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  void navigator.serviceWorker.register('/service-worker.js');
+}
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />

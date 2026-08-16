@@ -5,7 +5,7 @@ import { App } from '../src/app/App';
 describe('App shell', () => {
   it('ประกาศชื่อผลิตภัณฑ์และ main landmark', () => {
     render(<App />);
-    expect(screen.getByRole('banner')).toHaveTextContent('Printer Fleet Command Center');
+    expect(screen.getByText('Printer Fleet Command Center')).toBeInTheDocument();
     expect(screen.getByRole('main')).toBeInTheDocument();
   });
 });

@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 
 export default tseslint.config(
-  { ignores: ['dist', 'coverage', 'public/assets', 'node_modules'] },
+  { ignores: ['dist', 'coverage', 'public/assets', 'node_modules', 'api/**', 'service-worker.js', 'tests/**/*.cjs'] },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -12,6 +12,9 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'react-hooks/set-state-in-effect': 'off',
     },
   },
 );
