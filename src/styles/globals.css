@@ -1,0 +1,7 @@
+:root { font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; color: #f7f8fa; background: #07090d; }
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; background: #07090d; }
+button, input, select, textarea { font: inherit; }
+.app-shell { min-height: 100vh; }
+.app-header { padding: 24px; font-family: 'Chakra Petch', sans-serif; font-size: 1.25rem; }
+main { padding: 24px; }
