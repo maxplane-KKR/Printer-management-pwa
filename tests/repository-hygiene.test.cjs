@@ -13,9 +13,9 @@ for (const entry of ['.vercel/', '.env', '.env.*', 'node_modules/', '*.log']) {
 }
 
 const sourceFiles = [
-  'Index.html',
-  'manifest.webmanifest',
-  'service-worker.js',
+  'index.html',
+  'public/manifest.webmanifest',
+  'public/service-worker.js',
   'vercel.json',
   'api/printers.js'
 ];
