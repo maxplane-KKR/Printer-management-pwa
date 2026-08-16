@@ -110,3 +110,7 @@ main { width: min(100%, 1440px); margin: 0 auto; padding: clamp(30px, 4vw, 58px)
   color: var(--text);
   background-color: var(--panel-solid);
 }
+.printer-ip-link { display: block; margin-top: 4px; color: var(--accent-strong); font: 10px 'Chakra Petch', sans-serif; letter-spacing: .03em; text-decoration: none; }
+.printer-ip-link:hover, .printer-ip-link:focus-visible { text-decoration: underline; }
+.printer-card__actions { display: inline-flex; align-items: center; gap: 4px; }
+.printer-card__foot button.danger-action { color: var(--danger); }
