@@ -1,3 +1,4 @@
+import shutil
 from pathlib import Path
 
 from PIL import Image
@@ -8,9 +9,10 @@ from PIL import Image
 
 
 ROOT = Path(__file__).resolve().parents[1]
-ICONS = ROOT / "assets" / "icons"
+ICONS = ROOT / "public" / "assets" / "icons"
+LEGACY_ICONS = ROOT / "assets" / "icons"
 MASTER = ICONS / "icon-master-1024.png"
-MASKABLE_BACKGROUND = (253, 198, 46, 255)
+MASKABLE_BACKGROUND = (7, 9, 13, 255)
 
 OUTPUT_SIZES = {
     "apple-touch-icon.png": 180,
@@ -61,6 +63,7 @@ def transparent_corner_variant(source, size):
 
 def main():
     ICONS.mkdir(parents=True, exist_ok=True)
+    LEGACY_ICONS.mkdir(parents=True, exist_ok=True)
     source = Image.open(MASTER).convert("RGBA")
     master = source.resize((1024, 1024), Image.Resampling.LANCZOS)
     master.save(MASTER, optimize=True)
@@ -102,6 +105,10 @@ def main():
         format="ICO",
         sizes=[(16, 16), (32, 32), (48, 48)],
     )
+
+    for generated in ICONS.iterdir():
+        if generated.is_file():
+            shutil.copy2(generated, LEGACY_ICONS / generated.name)
 
 
 if __name__ == "__main__":
