@@ -5,14 +5,37 @@ export interface TcpResult { ip: string; status: string }
 export function buildTcpScanScript(ips: string[]): string {
   const targets = ips.filter((ip) => /^\d{1,3}(?:\.\d{1,3}){3}$/.test(ip));
   const literal = `@(${targets.map((ip) => `'${ip.replaceAll("'", "''")}'`).join(', ')})`;
-  return `$ips = ${literal}\n$ports = @(9100, 80)\n$results = foreach ($ip in $ips) { $online = $false; foreach ($port in $ports) { try { $client = [System.Net.Sockets.TcpClient]::new(); $task = $client.ConnectAsync($ip, $port); if ($task.Wait(1000) -and $client.Connected) { $online = $true }; $client.Dispose() } catch {} }; [pscustomobject]@{ ip = $ip; status = if ($online) { 'online' } else { 'offline' } } }\n$results | ConvertTo-Json -Compress | Set-Clipboard`;
+  return [
+    `$ips = ${literal}`,
+    '$ports = @(9100, 80)',
+    '$timeoutMs = 500',
+    '$total = $ips.Count',
+    '$index = 0',
+    '$results = foreach ($ip in $ips) {',
+    '  $index++',
+    "  Write-Progress -Activity 'ตรวจสถานะเครื่องพิมพ์' -Status \"$index/$total $ip\" -PercentComplete (($index / [Math]::Max($total, 1)) * 100)",
+    '  $online = $false',
+    '  foreach ($port in $ports) {',
+    '    $client = $null',
+    '    try {',
+    '      $client = [System.Net.Sockets.TcpClient]::new()',
+    '      $task = $client.ConnectAsync($ip, $port)',
+    '      if ($task.Wait($timeoutMs) -and $client.Connected) { $online = $true; break }',
+    '    } catch {} finally { if ($client) { $client.Dispose() } }',
+    '  }',
+    "  [pscustomobject]@{ ip = $ip; status = if ($online) { 'online' } else { 'offline' } }",
+    '}',
+    "Write-Progress -Activity 'ตรวจสถานะเครื่องพิมพ์' -Completed",
+    '$payload = ConvertTo-Json -InputObject @($results) -Compress',
+    'Set-Clipboard -Value $payload',
+    '$payload',
+  ].join('\n');
 }
 
 export function parseTcpResults(raw: string): TcpResult[] {
   let parsed: unknown;
   try { parsed = JSON.parse(raw); } catch { throw new Error('รูปแบบ JSON ไม่ถูกต้อง'); }
-  const values = Array.isArray(parsed) ? parsed : [];
-  if (!Array.isArray(parsed)) throw new Error('ต้องเป็น JSON array');
+  const values = Array.isArray(parsed) ? parsed : parsed && typeof parsed === 'object' ? [parsed] : [];
   const results = values.filter((item): item is Record<string, unknown> => item && typeof item === 'object' && typeof (item as Record<string, unknown>).ip === 'string' && typeof (item as Record<string, unknown>).status === 'string').map((item) => ({ ip: String(item.ip), status: String(item.status) }));
   if (!results.length) throw new Error('ไม่พบข้อมูล ip/status');
   return results;
