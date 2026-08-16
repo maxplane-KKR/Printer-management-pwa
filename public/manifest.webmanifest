@@ -1,12 +1,21 @@
 {
-  "id": "/",
-  "name": "Printer Management Pro",
-  "short_name": "Printer Pro",
+  "id": "/printpro",
+  "name": "PrintPro — Printer Fleet",
+  "short_name": "PrintPro",
   "description": "ระบบจัดการและติดตามสถานะเครื่องพิมพ์",
   "lang": "th",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+  "orientation": "any",
+  "categories": ["business", "productivity"],
+  "prefer_related_applications": false,
   "background_color": "#07090D",
   "theme_color": "#E50914",
   "icons": [
